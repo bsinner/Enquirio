@@ -1,0 +1,7 @@
+target/*
+.idea/*
+*TestServlet*
+*hibernate.cfg.xml*
+*dbUtil.properties*
+logs/*
+*tokenSecret.txt*
