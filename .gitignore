@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/visualstudio
 
+# Third party libraries
+Enquirio/wwwroot/lib/
+
 # User-specific files
 *.rsuser
 *.suo
