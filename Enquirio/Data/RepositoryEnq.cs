@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-// Generic repository
+// Generic repository following example on:
+// https://cpratt.co/truly-generic-repository/
+//
 namespace Enquirio.Data {
     public class RepositoryEnq : IRepositoryEnq {
 
