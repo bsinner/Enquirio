@@ -4,15 +4,19 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Specialized;
 
+// Get UI friendly date string
+
 namespace Enquirio.Views.Shared.TagHelpers {
 
-    [HtmlTargetElement("duration", Attributes = "date")]
+    [HtmlTargetElement("duration", Attributes = "date", TagStructure = TagStructure.WithoutEndTag)]
     public class DurationTagHelper : TagHelper {
 
         public DateTime Date { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output) {
             output.Content.SetContent(GetString());
+            output.TagName = "span";
+            output.TagMode = TagMode.StartTagAndEndTag;
         }
 
         private string GetString() {
