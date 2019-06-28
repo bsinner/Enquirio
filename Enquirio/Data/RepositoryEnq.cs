@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 // Generic repository following example on:
 // https://cpratt.co/truly-generic-repository/
-//
+
 namespace Enquirio.Data {
     public class RepositoryEnq : IRepositoryEnq {
 
