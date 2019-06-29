@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Enquirio.Models;
+﻿using Enquirio.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Enquirio.Data {
@@ -16,7 +11,6 @@ namespace Enquirio.Data {
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Question> Question { get; set; }
 
-//        protected override void OnModelCreating(ModelBuilder builder) { }
     }
 
 }

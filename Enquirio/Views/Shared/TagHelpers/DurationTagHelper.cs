@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Specialized;
 
 // Get UI friendly date string
-
 namespace Enquirio.Views.Shared.TagHelpers {
 
     [HtmlTargetElement("duration", Attributes = "date", TagStructure = TagStructure.WithoutEndTag)]
