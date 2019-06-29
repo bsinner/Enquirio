@@ -3,6 +3,9 @@
 # Third party libraries
 Enquirio/wwwroot/lib/
 
+# Generated migrations
+Enquirio/Migrations/
+
 # User-specific files
 *.rsuser
 *.suo

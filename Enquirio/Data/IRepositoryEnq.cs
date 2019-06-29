@@ -9,36 +9,36 @@ namespace Enquirio.Data {
         void Create<T>(T entity) where T : class, IEntity;
 
         T GetById<T>(object id
-                , string[] navPropCollections
-                , string[] navPropFks) where T : class, IEntity;
+                , string[] navPropCollections = null
+                , string[] navPropFks = null) where T : class, IEntity;
         Task<T> GetByIdAsync<T>(object id
-                , string[] navPropCollections
-                , string[] navPropFks) where T : class, IEntity;
+                , string[] navPropCollections = null
+                , string[] navPropFks = null) where T : class, IEntity;
 
         List<T> Get<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy
-                , bool sortDesc
-                , int? take
-                , int? skip
-                , string[] includedNavProps) where T : class, IEntity;
-        List<T> GetAll<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy
-                , bool sortDesc
-                , int? take
-                , int? skip
-                , string[] includedNavProps) where T : class, IEntity;
-        Task<List<T>> GetAsync<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy
-                , bool sortDesc
-                , int? take
-                , int? skip
-                , string[] includedNavProps) where T : class, IEntity;
-        Task<List<T>> GetAllAsync<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy
-                , bool sortDesc
-                , int? take
-                , int? skip
-                , string[] includedNavProps) where T : class, IEntity;
+                , Expression<Func<T, IComparable>> orderBy = null
+                , bool sortDesc = false
+                , int? take = null
+                , int? skip = null
+                , string[] includedNavProps = null) where T : class, IEntity;
+        List<T> GetAll<T>(Expression<Func<T, bool>> filter = null
+                , Expression<Func<T, IComparable>> orderBy = null
+                , bool sortDesc = false
+                , int? take = null
+                , int? skip = null
+                , string[] includedNavProps = null) where T : class, IEntity;
+        Task<List<T>> GetAsync<T>(Expression<Func<T, bool>> filter 
+                , Expression<Func<T, IComparable>> orderBy = null
+                , bool sortDesc = false
+                , int? take = null
+                , int? skip = null
+                , string[] includedNavProps = null) where T : class, IEntity;
+        Task<List<T>> GetAllAsync<T>(Expression<Func<T, bool>> filter = null
+                , Expression<Func<T, IComparable>> orderBy = null
+                , bool sortDesc = false
+                , int? take = null
+                , int? skip = null
+                , string[] includedNavProps = null) where T : class, IEntity;
 
         void Delete<T>(T entity) where T : class, IEntity;
         void DeleteById<T>(object id) where T : class, IEntity;
