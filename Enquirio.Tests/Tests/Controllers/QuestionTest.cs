@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Enquirio.Controllers;
 using Enquirio.Data;
 using Enquirio.Models;
+using Enquirio.Tests.TestData;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -12,20 +10,13 @@ using Xunit;
 namespace Enquirio.Tests.Tests.Controllers {
     public class QuestionTest {
 
-        private readonly Question _testQuestion 
-            = new Question { Id = 2, Title = "Q2", Contents = "...", Created = DateTime.Now
-                , Answers = new List<Answer> {
-                    new Answer { Id = 1, Title = "A1", Contents = "...", Created = DateTime.Now }
-                    , new Answer { Id = 2, Title = "A2", Contents = "...", Created = DateTime.Now }}
-                };
-
         [Fact]
         public void ViewQuestionTest() {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
 
             mockRepo.Setup(repo => repo.GetByIdAsync<Question>("1", new [] {"Answers"}, null))
-                    .Returns(Task.FromResult(_testQuestion));
+                    .Returns(Task.FromResult(QuestionData.TestQuestion));
 
             QuestionController controller = new QuestionController(mockRepo.Object);
 
@@ -55,6 +46,26 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.Equal("NotFound", result.Result.ViewName);
             Assert.Null(result.Result.ViewData.Model);
             mockRepo.Verify(repo => repo.GetByIdAsync<Question>("foo", new [] { "Answers" }, null), Times.Once);
+        }
+
+        [Fact]
+        public void CreateNewQuestionTest() {
+            // Arrange
+            var question = QuestionData.TestQuestion;
+            var mockRepo = new Mock<IRepositoryEnq>();
+
+            mockRepo.Setup(repo => repo.Create(question));
+            mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => question.Id = 1);
+
+            var controller = new QuestionController(mockRepo.Object);
+
+            // Act
+            Task<RedirectToRouteResult> result = controller.Create(question);
+
+            // Assert
+            Assert.Equal(1, question.Id);
+            Assert.Equal(question.Id, result.Result.RouteValues["id"]);
+            Assert.Equal("question", result.Result.RouteName);
         }
 
         [Fact]

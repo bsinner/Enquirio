@@ -30,7 +30,7 @@ namespace Enquirio.Controllers {
         // Submit question, redirect to it's page
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Question question) {
+        public async Task<RedirectToRouteResult> Create(Question question) {
             _repo.Create(question);
 
             await _repo.SaveAsync();
