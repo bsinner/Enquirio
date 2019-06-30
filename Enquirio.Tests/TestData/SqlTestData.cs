@@ -2,7 +2,7 @@
 
 // Sample data for test classes
 namespace Enquirio.Tests.Util {
-    class SampleData {
+    class SqlTestData {
         
         public static List<string> Questions() => new List<string> {
               "INSERT INTO Question (title, contents, Id, Created) VALUES ('Q1', '...', 1, '1972-01-02 12:34:56');"

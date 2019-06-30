@@ -11,7 +11,7 @@ using Xunit;
 namespace Enquirio.Tests {
     public class RepositoryTest {
 
-        private readonly List<string> _data = SampleData.Questions();
+        private readonly List<string> _data = SqlTestData.Questions();
 
         [Fact]
         public void TestGetAll() {
