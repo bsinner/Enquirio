@@ -15,7 +15,7 @@ namespace Enquirio.Controllers {
 
             if (id != null) {
                 question = await _repo
-                    .GetByIdAsync<Question>(id, navPropCollections : new [] { "Answers" });
+                    .GetByIdAsync<Question>(id, new [] { "Answers" });
             }
 
             return View(question);

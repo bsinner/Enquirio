@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Enquirio.Data;
-using Enquirio.Models;
+﻿using Enquirio.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enquirio.Controllers {
