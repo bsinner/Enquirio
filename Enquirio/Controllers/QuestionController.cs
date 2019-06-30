@@ -10,6 +10,7 @@ namespace Enquirio.Controllers {
 
         public QuestionController(IRepositoryEnq repo) => _repo = repo;
 
+        // Show question page or not found page
         public async Task<ViewResult> ViewQuestion(string id) {
             Question question = null;
 
@@ -18,11 +19,15 @@ namespace Enquirio.Controllers {
                     .GetByIdAsync<Question>(id, new [] { "Answers" });
             }
 
-            return View(question);
+            return question == null 
+                ? View("NotFound")
+                : View(question);
         }
 
+        // Create form
         public ViewResult Create() => View();
         
+        // Submit question, redirect to it's page
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Question question) {
