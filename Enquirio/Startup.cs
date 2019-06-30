@@ -33,10 +33,12 @@ namespace Enquirio {
                 builder.UseDeveloperExceptionPage();
             }
 
-            builder.UseStaticFiles();
-
-            builder.UseMvcWithDefaultRoute();
-
+            builder.UseStaticFiles()
+                .UseMvc(routes => {
+                    routes.MapRoute("default", "{controller=Home}/{action=Index}");
+                    routes.MapRoute("question", "question/{id?}",
+                        new {controller = "Question", action = "ViewQuestion"});
+                });
         }
     }
 }

@@ -98,6 +98,7 @@ namespace Enquirio.Data {
             ConvertId(ref id);
 
             var entity = _context.Set<T>().Find(id);
+            if (entity == null) return null;
 
             AddProps(navPropCollections
                 , p => _context.Entry(entity).Collection(p).Load());
@@ -114,6 +115,7 @@ namespace Enquirio.Data {
             ConvertId(ref id);
 
             var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null) return null;
 
             AddProps(navPropCollections, async p => 
                     await _context.Entry(entity).Collection(p).LoadAsync());
@@ -174,7 +176,10 @@ namespace Enquirio.Data {
 
         // Parse string ids to int
         private void ConvertId(ref object id) {
-            if (id is string) id = int.Parse((string)id);
+            if (id is string) {
+                int.TryParse((string)id, out var result);
+                id = result;
+            }
         }
 
     }

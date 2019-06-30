@@ -10,11 +10,12 @@ namespace Enquirio.Controllers {
 
         public QuestionController(IRepositoryEnq repo) => _repo = repo;
 
-        public async Task<ViewResult> ViewQuestion([FromQuery(Name = "id")] string id) {
+        public async Task<ViewResult> ViewQuestion(string id) {
             Question question = null;
 
             if (id != null) {
-//                question = await _repo.GetByIdAsync<Question>(id);
+                question = await _repo
+                    .GetByIdAsync<Question>(id, navPropCollections : new [] { "Answers" });
             }
 
             return View(question);
@@ -29,7 +30,7 @@ namespace Enquirio.Controllers {
 
             await _repo.SaveAsync();
 
-            return RedirectToAction($"ViewQuestion?id={question.Id}");
+            return RedirectToRoute("question", new { id = question.Id });
         }
 
     }
