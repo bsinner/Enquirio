@@ -19,7 +19,6 @@ namespace Enquirio.Tests.Tests.Controllers {
                     , new Answer { Id = 2, Title = "A2", Contents = "...", Created = DateTime.Now }}
                 };
 
-       
         [Fact]
         public void ViewQuestionTest() {
             // Arrange
@@ -56,6 +55,20 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.Equal("NotFound", result.Result.ViewName);
             Assert.Null(result.Result.ViewData.Model);
             mockRepo.Verify(repo => repo.GetByIdAsync<Question>("foo", new [] { "Answers" }, null), Times.Once);
+        }
+
+        [Fact]
+        public void CreateViewTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
+            var controller = new QuestionController(mockRepo.Object);
+
+            // Act
+            ViewResult result = controller.Create();
+
+            // Assert
+            Assert.Null(result.ViewName);
+            Assert.Null(result.ViewData.Model);
         }
     }
 }
