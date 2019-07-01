@@ -40,8 +40,13 @@
 
                     </form>
                 </div>
-
-                <button id="showAnsFormBtn" class="btn btn-outline-dark float-right">Answer</button>
+                
+                <div id="questionBtns">
+                    <button id="showAnsFormBtn" class="btn btn-outline-dark float-right">Answer</button>
+                    <!-- Conditionally display these buttons when users are implemented -->
+                    <button id="editQuestionBtn" class="btn btn-outline-info mr-2 float-right">Edit</button>
+                    <button id="DeleteQuestionBtn" class="btn btn-outline-info mr-2 float-right">Delete</button>
+                </div>
                 <br /><br />
 
             </div>
@@ -57,6 +62,12 @@
                          
                      <br />
                      <i class="text-secondary">&nbsp;&nbsp;Answered by Author on ##/##/####</i>
+                     
+                     <div id="answerBtns">
+                         <!-- Conditionally display these buttons when users are implemented -->
+                         <button class="editAnsBtn btn btn-outline-info float-right">Edit</button>
+                         <button class="deleteAnsBtn btn btn-outline-info float-right mr-2">Delete</button>
+                     </div>
 
                  </div>
              </div>
