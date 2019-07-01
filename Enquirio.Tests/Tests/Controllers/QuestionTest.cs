@@ -25,7 +25,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             // Assert
             Assert.Null(result.Result.ViewName);
-            Assert.IsType<Question>(result.Result.ViewData.Model);
+            Assert.IsType<QuestionViewModel>(result.Result.ViewData.Model);
             mockRepo.Verify(repo => repo.GetByIdAsync<Question>("1", new[] {"Answers"}, null), Times.Once);
         }
 
