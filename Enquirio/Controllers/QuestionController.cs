@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Dynamic;
+using System.Threading.Tasks;
 using Enquirio.Data;
 using Enquirio.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,20 @@ namespace Enquirio.Controllers {
         // Show question page or not found page
         public async Task<ViewResult> ViewQuestion(string id) {
             Question question = null;
+            QuestionViewModel model = new QuestionViewModel();
 
             if (id != null) {
                 question = await _repo
                     .GetByIdAsync<Question>(id, new [] { "Answers" });
             }
 
-            return question == null 
-                ? View("NotFound")
-                : View(question);
+            if (question == null) {
+                return View("NotFound");
+            }
+
+            model.Question = question;
+
+            return View(model);
         }
 
         // Create form

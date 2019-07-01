@@ -1,5 +1,5 @@
-﻿@model Question
-@{ ViewBag.Title = Model.Title; }
+﻿@model QuestionViewModel
+@{ ViewBag.Title = Model.Question.Title; }
 
 <br/><br/>
 
@@ -8,15 +8,43 @@
                         
         <div class="row justify-content-center">
             <div class="col-sm-8">
-                <h4>@Model?.Title</h4>
-                <p>@Model?.Contents</p>
+                <h4>@Model.Question.Title</h4>
+                <p>@Model?.Question.Contents</p>
 
                 <br/>
                 <i>Asked by Author on ##/##/###</i>
+                
+                <!-- Hidden create answer form -->
+                <div class="form-group" id="answerForm">
+                    <form asp-controller="Question" asp-action="CreateAnswer" method="POST">
+                
+                        <br />
+                        <div>
+                            <label asp-for="Answer.Title"></label>
+                            <input asp-for="Answer.Title" class="form-control"/>
+                            <small class="text-danger" style="display: none;">Title must not be blank</small>
+                        </div>
+                
+                        <br />
+                        <div>
+                            <label asp-for="Answer.Contents"></label>
+                            <textarea asp-for="Answer.Contents" class="form-control" rows="5"></textarea>
+                            <small class="text-danger" style="display: none;">Contents must not be blank</small>
+                        </div>
+                
+                        <input type="hidden" asp-for="Answer.QuestionId" value="@Model.Question.Id" />
+
+                        <br />
+                        <button class="btn btn-outline-info float-right">Cancel</button>
+                        <button class="btn btn-outline-dark float-right mr-2" type="submit">Submit</button>
+
+                    </form>
+                </div>
+
             </div>
         </div>
-            
-        @foreach (var answer in Model.Answers) {
+
+        @foreach (var answer in Model.Question.Answers) {
              <div class="mt-4 row justify-content-center">
                  <div class="col-sm-8">
                      <hr />
