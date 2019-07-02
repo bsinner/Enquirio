@@ -1,17 +1,23 @@
-﻿using Enquirio.Data;
+﻿using System.Threading.Tasks;
+using Enquirio.Data;
+using Enquirio.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enquirio.Controllers {
 
     public class HomeController : Controller {
 
-        private readonly IRepositoryEnq _repository;
+        private readonly IRepositoryEnq _repo;
 
-        public HomeController(IRepositoryEnq repository) {
-            _repository = repository;
+        public HomeController(IRepositoryEnq repo) {
+            _repo = repo;
         }
 
-        public IActionResult Index() => View();
+        public async Task<IActionResult> Index() {
+            var questions = await _repo.GetAllAsync<Question>();
+
+            return View(questions);
+        }
 
     }
 }

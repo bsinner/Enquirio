@@ -1,13 +1,11 @@
-﻿@{
-    ViewBag.Title = "Home";
-}
+﻿@model List<Question>
+@{ ViewBag.Title = "Home"; }
 
 <!-- Form -->
 <br /><br />
 <form class="mt-2">
     <div class="form-group row justify-content-center">
-        
-        <!-- TODO: tag helpers -->
+
         <label for="zip" class="col-sm-1 col-form-label px-0 pt-1 text-right">Zip Code</label>
         <div class="col-sm-3">
             <input id="zip" type="text" class="form-control form-control-sm" />
@@ -42,13 +40,15 @@
             <div class="col-sm-9">
                 
                 <!-- For each here -->
-                <h6>Question Title</h6>
-                
-                <p class="mb-4">
-                    Contents
-                    <a>(More...)</a>
-                    <i class="text-secondary">&nbsp;&nbsp;&nbsp;Username - X/X/XXXX</i>
-                </p>
+                @foreach (var q in Model) {
+                    <h6>@q.Title</h6>
+
+                    <p class="mb-4">
+                        @q.Contents
+                        <a asp-controller="Question" asp-action="ViewQuestion" asp-route-id="@q.Id">(More...)</a>
+                        <i class="text-secondary">&nbsp;&nbsp;&nbsp;Username - X/X/XXXX</i>
+                    </p>
+                }
 
             </div>
         </div>
