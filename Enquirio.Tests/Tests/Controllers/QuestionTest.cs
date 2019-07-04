@@ -83,11 +83,11 @@ namespace Enquirio.Tests.Tests.Controllers {
             var controller = new QuestionController(mockRepo.Object);
 
             // Act
-            Task<RedirectToRouteResult> result = controller.Delete(question.Id);
+            Task<RedirectToActionResult> result = controller.Delete(question.Id);
 
             // Assert
-            Assert.Equal("default", result.Result.RouteName);
-
+            Assert.Equal("Index", result.Result.ActionName);
+            Assert.Equal("Home", result.Result.ControllerName);
             mockRepo.Verify(repo => repo.DeleteById<Question>(question.Id), Times.Once);
             mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
