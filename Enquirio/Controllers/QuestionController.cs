@@ -1,5 +1,4 @@
-﻿using System.Dynamic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Enquirio.Data;
 using Enquirio.Models;
 using Microsoft.AspNetCore.Mvc;
