@@ -71,6 +71,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
 
+        [Fact]
         public void DeleteQuestionTest() {
             // Arrange
             var question = QuestionData.TestQuestion;
@@ -82,7 +83,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var controller = new QuestionController(mockRepo.Object);
 
             // Act
-            Task<RedirectToRouteResult> result = controller.Delete(question);
+            Task<RedirectToRouteResult> result = controller.Delete(question.Id);
 
             // Assert
             Assert.Equal("default", result.Result.RouteName);
