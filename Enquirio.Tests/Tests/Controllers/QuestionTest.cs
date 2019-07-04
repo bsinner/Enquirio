@@ -71,6 +71,27 @@ namespace Enquirio.Tests.Tests.Controllers {
             mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
 
+        public void DeleteQuestionTest() {
+            // Arrange
+            var question = QuestionData.TestQuestion;
+            var mockRepo = new Mock<IRepositoryEnq>();
+
+            mockRepo.Setup(repo => repo.DeleteById<Question>(question.Id));
+            mockRepo.Setup(repo => repo.SaveAsync());
+
+            var controller = new QuestionController(mockRepo.Object);
+
+            // Act
+            Task<RedirectToRouteResult> result = controller.Delete(question);
+
+            // Assert
+            Assert.Equal("default", result.Result.RouteName);
+
+            mockRepo.Verify(repo => repo.DeleteById<Question>(question.Id), Times.Once);
+            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+        }
+
+        // TODO delete after switch to api new answer
         [Fact]
         public void CreateNewAnswerTest() {
             // Arrange
