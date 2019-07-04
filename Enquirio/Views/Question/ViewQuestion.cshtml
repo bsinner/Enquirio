@@ -45,7 +45,7 @@
                     <button id="showAnsFormBtn" class="btn btn-outline-dark float-right">Answer</button>
                     <!-- Conditionally display these buttons when users are implemented -->
                     <button id="editQuestionBtn" class="btn btn-outline-info mr-2 float-right">Edit</button>
-                    <button id="DeleteQuestionBtn" class="btn btn-outline-info mr-2 float-right">Delete</button>
+                    <a asp-controller="Question" asp-action="Delete" asp-route-id="@Model.Question.Id" class="btn btn-outline-info mr-2 float-right">Delete</a>
                 </div>
                 <br /><br />
 

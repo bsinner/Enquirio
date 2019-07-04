@@ -55,12 +55,12 @@ namespace Enquirio.Controllers {
         }
 
         // Delete question
-        public async Task<RedirectToRouteResult> Delete(int id) {
-            _repo.DeleteById<Question>(id);
+        public async Task<RedirectToActionResult> Delete(int id) {
+                _repo.DeleteById<Question>(id);
 
             await _repo.SaveAsync();
 
-            return RedirectToRoute("default");
+            return RedirectToAction("Index", "Home");
         }
     }
 }
