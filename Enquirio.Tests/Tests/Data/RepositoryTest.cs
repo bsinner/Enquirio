@@ -131,12 +131,14 @@ namespace Enquirio.Tests {
                 q.Contents = newContents;
                 q.Answers.Add(a);
 
+                repo.Update(q);
                 await repo.SaveAsync();
 
                 var result = repo2.GetById<Question>(id);
 
                 Assert.Equal(newContents, result.Contents);
                 Assert.Equal(2, result.Answers.Count);
+                Assert.Equal(DateTime.Now.Year, result.Edited?.Year);
             });
         }
 
