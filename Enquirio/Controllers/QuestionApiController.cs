@@ -14,8 +14,8 @@ namespace Enquirio.Controllers {
 
         [HttpPost("createAnswer/{id}")]
         [Consumes("application/json")]
-        public async Task<string> CreateAnswer([FromBody] Answer answer, int id) {
-            answer.QuestionId = id;
+        public async Task<string> CreateAnswer([FromBody] Answer answer, int questionId) {
+            answer.QuestionId = questionId;
 
             _repo.Create(answer);
 

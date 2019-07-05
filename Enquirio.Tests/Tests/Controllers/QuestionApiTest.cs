@@ -15,48 +15,45 @@ namespace Enquirio.Tests.Tests.Controllers {
         
         [Fact]
         public void CreateAnswerTest() {
-            // Arrange
-            var mockRepo = new Mock<IRepositoryEnq>();
-            var answer = QuestionData.TestAnswer;
+            RunTest((answer, mockRepo, controller) => {
+                
+                // Arrange
+                mockRepo.Setup(repo => repo.Create(answer));
+                mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 50);
 
-            mockRepo.Setup(repo => repo.Create(answer));
-            mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 1);
+                // Act
+                Task<string> id = controller.CreateAnswer(answer, 99);
 
-            var controller = new QuestionApiController(mockRepo.Object);
+                // Assert
+                Assert.Equal("50", id.Result);
+                Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
+                    , typeof(HttpPostAttribute)));
 
-            // Act
-            Task<string> id = controller.CreateAnswer(answer, 99);
-
-            // Assert
-            Assert.Equal("1", id.Result);
-            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
-                , typeof(HttpPostAttribute)));
-
-            mockRepo.Verify(repo => repo.Create(answer));
-            mockRepo.Verify(repo => repo.SaveAsync());
+                mockRepo.Verify(repo => repo.Create(answer));
+                mockRepo.Verify(repo => repo.SaveAsync());
+            });
         }
 
-        [Fact]
-        public void EditAnswerTest() {
-            // Arrange
-            var mockRepo = new Mock<IRepositoryEnq>();
-            var answer = QuestionData.TestAnswer;
-
-            mockRepo.Setup(repo => repo.Update(answer));
-            mockRepo.Setup(repo => repo.SaveAsync());
-
-            var controller = new QuestionApiController(mockRepo.Object);
-
-            // Act
-            Task<StatusCodeResult> result = controller.EditAnswer(answer);
-
-            // Assert
-            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
-                , typeof(HttpPutAttribute)));
-
-            mockRepo.Verify(repo => repo.Update(answer), Times.Once);
-            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-        }
+//        [Fact]
+//        public void EditAnswerTest() {
+//            RunTest((answer, mockRepo, controller) => {
+//
+//                // Arrange
+//                mockRepo.Setup(repo => repo.Update(answer));
+//                mockRepo.Setup(repo => repo.SaveAsync());
+//
+//                // Act
+//                Task<StatusCodeResult> result = controller.EditAnswer(answer);
+//
+//                // Assert
+//                Assert.Equal(201, result.Result.StatusCode);
+//                Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
+//                    , typeof(HttpPutAttribute)));
+//                
+//                mockRepo.Verify(repo => repo.Update(answer), Times.Once);
+//                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+//            });
+//        }
 
         [Fact]
         public void DeleteAnswerTest() {
@@ -64,6 +61,15 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void EditQuestionTest() {
+        }
+
+        // Give test sample entity, mock repository and controller
+        private void RunTest(Action<Answer, Mock<IRepositoryEnq>, QuestionApiController> test) {
+            var answer = QuestionData.TestAnswer;
+            var repo = new Mock<IRepositoryEnq>();
+            var controller = new QuestionApiController(repo.Object);
+
+            test.Invoke(answer, repo, controller);
         }
 
         private bool HasAttribute(String method, Type attribute) {
