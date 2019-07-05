@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Castle.Core.Internal;
 using Enquirio.Controllers;
 using Enquirio.Data;
+using Enquirio.Models;
 using Enquirio.Tests.TestData;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -28,8 +29,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             // Assert
             Assert.Equal("1", id.Result);
-            Assert.True(HasAttribute(
-                nameof(QuestionApiController.CreateAnswer)
+            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
                 , typeof(HttpPostAttribute)));
 
             mockRepo.Verify(repo => repo.Create(answer));
@@ -38,6 +38,24 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void EditAnswerTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
+            var answer = QuestionData.TestAnswer;
+
+            mockRepo.Setup(repo => repo.Update(answer));
+            mockRepo.Setup(repo => repo.SaveAsync());
+
+            var controller = new QuestionApiController(mockRepo.Object);
+
+            // Act
+            Task<StatusCodeResult> result = controller.EditAnswer(answer);
+
+            // Assert
+            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
+                , typeof(HttpPutAttribute)));
+
+            mockRepo.Verify(repo => repo.Update(answer), Times.Once);
+            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
 
         [Fact]
