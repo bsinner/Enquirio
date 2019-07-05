@@ -24,7 +24,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var controller = new QuestionApiController(mockRepo.Object);
 
             // Act
-            Task<string> id = controller.CreateAnswer(answer);
+            Task<string> id = controller.CreateAnswer(answer, 99);
 
             // Assert
             Assert.Equal("1", id.Result);
