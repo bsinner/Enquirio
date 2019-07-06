@@ -59,27 +59,26 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void EditAnswerTest() {
-//            RunTest((answer, err, mockRepo, controller) => {
-//
-//                // Arrange
-//                mockRepo.Setup(repo => repo.Update(answer));
-//                mockRepo.Setup(repo => repo.SaveAsync());
-//
-//                // Act
-//                Task<StatusCodeResult> result = controller.EditAnswer(answer);
-//
-//                // Assert
-//                Assert.Equal(201, result.Result.StatusCode);
-//                Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
-//                    , typeof(HttpPutAttribute)));
-//                
-//                mockRepo.Verify(repo => repo.Update(answer), Times.Once);
-//                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-//            });
+            RunTest(async (answer, err, mockRepo, controller) => {
+                // Arrange
+                mockRepo.Setup(repo => repo.ExistsAsync<Question>(e => e.Id == 1))
+                    .ReturnsAsync(true);
+                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(e => e.Id == answer.Id))
+                    .ReturnsAsync(true);
+
+                // Act
+                var result = await controller.EditAnswer(answer, 1);
+                
+                // Assert
+                Assert.IsType<OkResult>(result);
+                mockRepo.Verify(repo => repo.Update(answer), Times.Once);
+                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+            });
         }
 
         [Fact]
         public void EditAnswerErrorTest() {
+            RunTest(async (answer, errAnswer, mockRepo, controller) => { });
         }
 
         [Fact]
