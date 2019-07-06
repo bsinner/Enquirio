@@ -5,5 +5,8 @@ namespace Enquirio.Data {
     public interface IPost : IEntity {
         DateTime Created { get; set; }
         DateTime? Edited { get; set; }
+
+        String Title { get; set; }
+        String Contents { get; set; }
     }
 }
