@@ -60,6 +60,23 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
+        [HttpPut("editQuestion")]
+        public async Task<IActionResult> EditQuestion([FromBody] Question question) {
+
+            if (InvalidEntity(question)) {
+                return BadRequest();
+            }
+
+            if (await EntityNotFound(question.Id)) {
+                return NotFound();
+            }
+
+            _repo.Update(question);
+            await _repo.SaveAsync();
+
+            return Ok();
+        }
+
         private bool InvalidEntity(IPost post) =>
             string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)

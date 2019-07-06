@@ -161,7 +161,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                     .ReturnsAsync(true);
 
                 // Act
-                var result = await controller.EditQuestion(question);
+                var result = await controller.EditQuestion((Question)question);
 
                 // Assert
                 Assert.IsType<OkResult>(result);
@@ -182,8 +182,8 @@ namespace Enquirio.Tests.Tests.Controllers {
                     .ReturnsAsync(false);
                 
                 // Act
-                var notFoundResult = await controller.EditQuestion(question);
-                var badReqResult = await controller.EditQuestion(errQuestion);
+                var notFoundResult = await controller.EditQuestion((Question)question);
+                var badReqResult = await controller.EditQuestion((Question)errQuestion);
 
                 // Assert
                 Assert.IsType<NotFoundResult>(notFoundResult);
