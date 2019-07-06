@@ -92,30 +92,6 @@ namespace Enquirio.Tests.Tests.Controllers {
             mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
 
-        // TODO delete after switch to api new answer
-        [Fact]
-        public void CreateNewAnswerTest() {
-            // Arrange
-            var answer = QuestionData.TestAnswer;
-            var mockRepo = new Mock<IRepositoryEnq>();
-
-            mockRepo.Setup(repo => repo.Create(answer));
-            mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 1);
-
-            var controller = new QuestionController(mockRepo.Object);
-            
-            // Act
-            Task<RedirectToRouteResult> result = controller.CreateAnswer(answer);
-
-            // Assert
-            Assert.Equal(1, answer.Id);
-            Assert.Equal(answer.QuestionId, result.Result.RouteValues["id"]);
-            Assert.Equal("question", result.Result.RouteName);
-
-            mockRepo.Verify(repo => repo.Create(answer), Times.Once);
-            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-        }
-
         [Fact]
         public void CreateViewTest() {
             // Arrange

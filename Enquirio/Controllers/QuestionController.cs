@@ -43,17 +43,6 @@ namespace Enquirio.Controllers {
             return RedirectToRoute("question", new { id = question.Id });
         }
 
-        // Submit answer, redirect to question page
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<RedirectToRouteResult> CreateAnswer(Answer answer) {
-            _repo.Create(answer);
-
-            await _repo.SaveAsync();
-
-            return RedirectToRoute("question", new { id = answer.QuestionId });
-        }
-
         // Delete question
         public async Task<RedirectToActionResult> Delete(int id) {
                 _repo.DeleteById<Question>(id);
