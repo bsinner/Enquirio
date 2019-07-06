@@ -46,11 +46,14 @@ namespace Enquirio.Tests.Tests.Controllers {
                     .ReturnsAsync(false);
 
                 // Act
-                NotFoundResult result404 = controller
-                    .CreateAnswer((Answer)answer, 999)
-                    .Result as NotFoundResult;
+                var notFoundResult = controller.CreateAnswer((Answer)answer, 999);
+                var badReqResult = controller.CreateAnswer((Answer)errAnswer, 999);
 
                 // Assert
+                Assert.IsType<BadRequestResult>(badReqResult);
+                Assert.IsType<NotFoundResult>(notFoundResult);
+
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>(e => e.Id == 999));
             });
         }
 
