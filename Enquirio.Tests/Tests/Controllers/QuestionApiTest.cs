@@ -109,7 +109,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void DeleteAnswerTest() {
-            RunTest(async (answer, errAnswer, mockRepo, controller) => {
+            RunTest(async (answer, err, mockRepo, controller) => {
                 
                 // Arrange
                 mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == 10))
@@ -149,6 +149,22 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void EditQuestionTest() {
+            RunTest(async (question, err, mockRepo, controller) => {
+
+                // Arrange
+                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == question.Id))
+                    .ReturnsAsync(true);
+
+                // Act
+                var result = await controller.EditQuestion(question);
+
+                // Assert
+                Assert.IsType<OkResult>(result);
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == question.Id));
+                mockRepo.Verify(repo => repo.Update(question));
+                mockRepo.Verify(repo => repo.SaveAsync());
+                mockRepo.VerifyNoOtherCalls();
+            }, true);
         }
 
         [Fact]

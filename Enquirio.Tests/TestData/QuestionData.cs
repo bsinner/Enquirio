@@ -19,6 +19,6 @@ namespace Enquirio.Tests.TestData {
             = new Answer { Id = 0, Title = "A1", Contents = "...", Created = DateTime.Now, QuestionId = 1 };
 
         public static Answer InvalidTestAnswer
-            = new Answer { Id = 0, Title = "", Contents = null, Created = DateTime.Now, QuestionId = 1 };
+            = new Answer { Id = 10, Title = "", Contents = null, Created = DateTime.Now, QuestionId = 1 };
     }
 }
