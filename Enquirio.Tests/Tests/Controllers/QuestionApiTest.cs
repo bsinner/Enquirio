@@ -32,7 +32,8 @@ namespace Enquirio.Tests.Tests.Controllers {
 
                 mockRepo.Verify(repo => repo.Create(answer), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == 1), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>
+                    (q => q.Id == 1), Times.Once);
                 mockRepo.VerifyNoOtherCalls();
             });
         }
@@ -76,8 +77,10 @@ namespace Enquirio.Tests.Tests.Controllers {
                 Assert.IsType<OkResult>(result);
                 mockRepo.Verify(repo => repo.Update(answer), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == 1), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == answer.Id), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>
+                    (q => q.Id == 1), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>
+                    (a => a.Id == answer.Id), Times.Once);
                 mockRepo.VerifyNoOtherCalls();
             });
         }
@@ -121,7 +124,8 @@ namespace Enquirio.Tests.Tests.Controllers {
                 // Assert
                 Assert.IsType<OkResult>(result);
 
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == 10), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>
+                    (a => a.Id == 10), Times.Once);
                 mockRepo.Verify(repo => repo.DeleteById<Answer>(10), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
                 mockRepo.VerifyNoOtherCalls();
@@ -142,7 +146,8 @@ namespace Enquirio.Tests.Tests.Controllers {
                 // Assert
                 Assert.IsType<NotFoundResult>(result);
 
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == 999), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>
+                    (a => a.Id == 999), Times.Once);
                 mockRepo.VerifyNoOtherCalls();
             });
         }
@@ -160,34 +165,55 @@ namespace Enquirio.Tests.Tests.Controllers {
 
                 // Assert
                 Assert.IsType<OkResult>(result);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == question.Id));
-                mockRepo.Verify(repo => repo.Update(question));
-                mockRepo.Verify(repo => repo.SaveAsync());
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>
+                    (q => q.Id == question.Id), Times.Once);
+                mockRepo.Verify(repo => repo.Update(question), Times.Once);
+                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
                 mockRepo.VerifyNoOtherCalls();
             }, true);
         }
 
         [Fact]
         public void EditQuestionErrorTest() {
+            RunTest(async (question, errQuestion, mockRepo, controller) => {
+
+                // Arrange
+                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == question.Id))
+                    .ReturnsAsync(false);
+                
+                // Act
+                var notFoundResult = await controller.EditQuestion(question);
+                var badReqResult = await controller.EditQuestion(errQuestion);
+
+                // Assert
+                Assert.IsType<NotFoundResult>(notFoundResult);
+                Assert.IsType<BadRequestResult>(badReqResult);
+
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>
+                    (q => q.Id == question.Id), Times.Once);
+                mockRepo.VerifyNoOtherCalls();
+            }, true);
         }
 
         [Fact]
         public void HttpVerbTests() {
-//            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
-//                , typeof(HttpPostAttribute)));
-//
-//            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteAnswer)
-//                , typeof(HttpDeleteAttribute)));
-//
-//            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
-//                , typeof(HttpPutAttribute)));
-//
-//            Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion)
-//                , typeof(HttpPutAttribute)));
+            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
+                , typeof(HttpPostAttribute)));
+
+            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteAnswer)
+                , typeof(HttpDeleteAttribute)));
+
+            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
+                , typeof(HttpPutAttribute)));
+
+            Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion)
+                , typeof(HttpPutAttribute)));
         }
 
         // Run test, pass valid entity, invalid entity, repository, and controller
-        private void RunTest(Func<IPost, IPost, Mock<IRepositoryEnq>, QuestionApiController, Task> test, bool questionTest = false) {
+        private void RunTest(Func<IPost, IPost, Mock<IRepositoryEnq>, QuestionApiController, Task> test
+            , bool questionTest = false) {
+
             IPost entity;
             IPost invalidEntity;
 
