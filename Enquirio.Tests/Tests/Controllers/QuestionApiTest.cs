@@ -20,7 +20,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                 
                 // Arrange
                 mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 50);
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(e => e.Id == 1))
+                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == 1))
                     .ReturnsAsync(true);
 
                 // Act
@@ -32,7 +32,8 @@ namespace Enquirio.Tests.Tests.Controllers {
 
                 mockRepo.Verify(repo => repo.Create(answer), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(e => e.Id == 1), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == 1), Times.Once);
+                mockRepo.VerifyNoOtherCalls();
             });
         }
 
@@ -41,7 +42,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             RunTest(async (answer, errAnswer, mockRepo, controller) => {
                 
                 // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(e => e.Id == 999))
+                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == 999))
                     .ReturnsAsync(false);
 
                 // Act
@@ -54,6 +55,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
                 mockRepo.Verify(repo => repo.ExistsAsync<Question>
                     (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+                mockRepo.VerifyNoOtherCalls();
             });
         }
 
@@ -62,9 +64,9 @@ namespace Enquirio.Tests.Tests.Controllers {
             RunTest(async (answer, err, mockRepo, controller) => {
                 
                 // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(e => e.Id == 1))
+                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == 1))
                     .ReturnsAsync(true);
-                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(e => e.Id == answer.Id))
+                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == answer.Id))
                     .ReturnsAsync(true);
 
                 // Act
@@ -74,8 +76,9 @@ namespace Enquirio.Tests.Tests.Controllers {
                 Assert.IsType<OkResult>(result);
                 mockRepo.Verify(repo => repo.Update(answer), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(e => e.Id == 1), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(e => e.Id == answer.Id), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == 1), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == answer.Id), Times.Once);
+                mockRepo.VerifyNoOtherCalls();
             });
         }
 
@@ -121,11 +124,27 @@ namespace Enquirio.Tests.Tests.Controllers {
                 mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == 10), Times.Once);
                 mockRepo.Verify(repo => repo.DeleteById<Answer>(10), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+                mockRepo.VerifyNoOtherCalls();
             });
         }
 
         [Fact]
         public void DeleteAnswerErrorTest() {
+            RunTest(async (answer, errAnswer, mockRepo, controller) => {
+
+                // Arrange
+                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == 999))
+                    .ReturnsAsync(false);
+
+                // Act
+                var result = await controller.DeleteAnswer(999);
+
+                // Assert
+                Assert.IsType<NotFoundResult>(result);
+
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == 999), Times.Once);
+                mockRepo.VerifyNoOtherCalls();
+            });
         }
 
         [Fact]
