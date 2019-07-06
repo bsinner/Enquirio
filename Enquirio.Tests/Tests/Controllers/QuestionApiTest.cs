@@ -15,14 +15,14 @@ namespace Enquirio.Tests.Tests.Controllers {
         
         [Fact]
         public void CreateAnswerTest() {
-            RunTest((answer, mockRepo, controller) => {
+            RunTest((answer, err, mockRepo, controller) => {
                 
                 // Arrange
                 mockRepo.Setup(repo => repo.Create(answer));
                 mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 50);
 
                 // Act
-                Task<string> id = controller.CreateAnswer(answer, 99);
+                Task<string> id = controller.CreateAnswer((Answer)answer, 99);
 
                 // Assert
                 Assert.Equal("50", id.Result);
@@ -34,9 +34,18 @@ namespace Enquirio.Tests.Tests.Controllers {
             });
         }
 
-//        [Fact]
-//        public void EditAnswerTest() {
-//            RunTest((answer, mockRepo, controller) => {
+        [Fact]
+        public void CreateAnswerErrorTest() {
+            RunTest((answer, err, mockRepo, controller) => {
+                // Arrange
+                // Act
+                // Assert
+            });
+        }
+
+        [Fact]
+        public void EditAnswerTest() {
+//            RunTest((answer, err, mockRepo, controller) => {
 //
 //                // Arrange
 //                mockRepo.Setup(repo => repo.Update(answer));
@@ -53,7 +62,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 //                mockRepo.Verify(repo => repo.Update(answer), Times.Once);
 //                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
 //            });
-//        }
+        }
 
         [Fact]
         public void DeleteAnswerTest() {
@@ -63,13 +72,23 @@ namespace Enquirio.Tests.Tests.Controllers {
         public void EditQuestionTest() {
         }
 
-        // Give test sample entity, mock repository and controller
-        private void RunTest(Action<Answer, Mock<IRepositoryEnq>, QuestionApiController> test) {
-            var answer = QuestionData.TestAnswer;
+        // Run test, pass valid entity, invalid entity, repository, and controller
+        private void RunTest(Action<IPost, IPost, Mock<IRepositoryEnq>, QuestionApiController> test, bool questionTest = false) {
+            IPost entity = null;
+            IPost invalidEntity = null;
+
+            if (!questionTest) {
+                entity = QuestionData.TestAnswer;
+                invalidEntity = QuestionData.InvalidTestAnswer;
+            } else {
+                entity = QuestionData.TestQuestion;
+                invalidEntity = QuestionData.InvalidTestQuestion;
+            }
+
             var repo = new Mock<IRepositoryEnq>();
             var controller = new QuestionApiController(repo.Object);
 
-            test.Invoke(answer, repo, controller);
+            test.Invoke(entity, invalidEntity, repo, controller);
         }
 
         private bool HasAttribute(String method, Type attribute) {
