@@ -120,9 +120,9 @@ namespace Enquirio.Data {
             var entity = await _context.Set<T>().FindAsync(id);
             if (entity == null) return null;
 
-            AddProps(navPropCollections, async p => 
+            await AddPropsAsync(navPropCollections, async p => 
                     await _context.Entry(entity).Collection(p).LoadAsync());
-            AddProps(navPropFks, async p => 
+            await AddPropsAsync(navPropFks, async p => 
                     await _context.Entry(entity).Reference(p).LoadAsync());
 
             return entity;
@@ -169,7 +169,7 @@ namespace Enquirio.Data {
             }
 
             AddProps(includedNavProps
-                    , p => query = query.Include(p));
+                    ,p => query = query.Include(p));
 
             if (take != null) query = query.Take(take.Value);
             if (skip != null) query = query.Skip(skip.Value);
@@ -177,11 +177,18 @@ namespace Enquirio.Data {
             return query;
         }
 
-        // AddProps uses a callback because nav properties are added differently 
-        // in GetById and Get/GetAll
+        // Navigation property adding methods
         private void AddProps(string[] props, Action<string> addProp) {
             if (props == null) return;
-            foreach (var p in props) addProp(p); 
+            foreach (var p in props) addProp(p);
+        }
+
+        private async Task AddPropsAsync(string[] props, Func<string, Task> addProp) {
+            if (props == null) return;
+
+            foreach (var p in props) {
+                await addProp(p);
+            }
         }
 
         // Parse string ids to int
