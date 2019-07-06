@@ -11,7 +11,7 @@ namespace Enquirio.Tests.Tests.Controllers {
     public class QuestionTest {
 
         [Fact]
-        public void ViewQuestionTest() {
+        public async void ViewQuestionTest() {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
 
@@ -21,16 +21,16 @@ namespace Enquirio.Tests.Tests.Controllers {
             QuestionController controller = new QuestionController(mockRepo.Object);
 
             // Act
-            Task<ViewResult> result = controller.ViewQuestion("1");
+            ViewResult result = await controller.ViewQuestion("1");
 
             // Assert
-            Assert.Null(result.Result.ViewName);
-            Assert.IsType<QuestionViewModel>(result.Result.ViewData.Model);
+            Assert.Null(result.ViewName);
+            Assert.IsType<QuestionViewModel>(result.ViewData.Model);
             mockRepo.Verify(repo => repo.GetByIdAsync<Question>("1", new[] {"Answers"}, null), Times.Once);
         }
 
         [Fact]
-        public void ViewQuestionNotFoundTest() {
+        public async void ViewQuestionNotFoundTest() {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
 
@@ -40,54 +40,49 @@ namespace Enquirio.Tests.Tests.Controllers {
             var controller = new QuestionController(mockRepo.Object);
 
             // Act
-            Task<ViewResult> result = controller.ViewQuestion("foo");
+            ViewResult result = await controller.ViewQuestion("foo");
 
             // Assert
-            Assert.Equal("NotFound", result.Result.ViewName);
-            Assert.Null(result.Result.ViewData.Model);
+            Assert.Equal("NotFound", result.ViewName);
+            Assert.Null(result.ViewData.Model);
             mockRepo.Verify(repo => repo.GetByIdAsync<Question>("foo", new [] { "Answers" }, null), Times.Once);
         }
 
         [Fact]
-        public void CreateNewQuestionTest() {
+        public async void CreateNewQuestionTest() {
             // Arrange
             var question = QuestionData.TestQuestion;
             var mockRepo = new Mock<IRepositoryEnq>();
 
-            mockRepo.Setup(repo => repo.Create(question));
             mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => question.Id = 1);
 
             var controller = new QuestionController(mockRepo.Object);
 
             // Act
-            Task<RedirectToRouteResult> result = controller.Create(question);
+            RedirectToRouteResult result = await controller.Create(question);
 
             // Assert
             Assert.Equal(1, question.Id);
-            Assert.Equal(question.Id, result.Result.RouteValues["id"]);
-            Assert.Equal("question", result.Result.RouteName);
+            Assert.Equal(question.Id, result.RouteValues["id"]);
+            Assert.Equal("question", result.RouteName);
 
             mockRepo.Verify(repo => repo.Create(question), Times.Once);
             mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
 
         [Fact]
-        public void DeleteQuestionTest() {
+        public async void DeleteQuestionTest() {
             // Arrange
             var question = QuestionData.TestQuestion;
             var mockRepo = new Mock<IRepositoryEnq>();
-
-            mockRepo.Setup(repo => repo.DeleteById<Question>(question.Id));
-            mockRepo.Setup(repo => repo.SaveAsync());
-
             var controller = new QuestionController(mockRepo.Object);
 
             // Act
-            Task<RedirectToActionResult> result = controller.Delete(question.Id);
+            RedirectToActionResult result = await controller.Delete(question.Id);
 
             // Assert
-            Assert.Equal("Index", result.Result.ActionName);
-            Assert.Equal("Home", result.Result.ControllerName);
+            Assert.Equal("Index", result.ActionName);
+            Assert.Equal("Home", result.ControllerName);
             mockRepo.Verify(repo => repo.DeleteById<Question>(question.Id), Times.Once);
             mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
         }
