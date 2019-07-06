@@ -68,7 +68,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                     .ReturnsAsync(true);
 
                 // Act
-                var result = await controller.EditAnswer(answer, 1);
+                var result = await controller.EditAnswer((Answer)answer, 1);
                 
                 // Assert
                 Assert.IsType<OkResult>(result);
@@ -90,8 +90,8 @@ namespace Enquirio.Tests.Tests.Controllers {
                     .ReturnsAsync(false);
 
                 // Act
-                var notFoundResult = await controller.EditAnswer(answer, 99);
-                var badReqResult = await controller.EditAnswer(errAnswer, 99);
+                var notFoundResult = await controller.EditAnswer((Answer)answer, 99);
+                var badReqResult = await controller.EditAnswer((Answer)errAnswer, 99);
 
                 // Assert
                 Assert.IsType<NotFoundResult>(notFoundResult);
