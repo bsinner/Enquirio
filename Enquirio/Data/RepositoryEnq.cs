@@ -17,6 +17,9 @@ namespace Enquirio.Data {
             _context = context;
         }
 
+        public void Save() => _context.SaveChanges();
+        public Task SaveAsync() => _context.SaveChangesAsync();
+
         public void Create<T>(T entity) where T : class, IEntity {
             if (entity is IPost) {
                 ((IPost) entity).Created = DateTime.Now;
@@ -125,8 +128,15 @@ namespace Enquirio.Data {
             return entity;
         }
 
-        public void Save() => _context.SaveChanges();
-        public Task SaveAsync() => _context.SaveChangesAsync();
+        public bool Exists<T>(Expression<Func<T, bool>> filter = null)
+                where T : class, IEntity {
+            return ContextGet(filter).Any();
+        }
+
+        public Task<bool> ExistsAsync<T>(Expression<Func<T, bool>> filter = null)
+                where T : class, IEntity {
+            return ContextGet(filter).AnyAsync();
+        }
 
         // Used by add and update methods
         private void ContextAdd<T>(T entity) where T : class {

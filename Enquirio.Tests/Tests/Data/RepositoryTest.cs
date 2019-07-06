@@ -145,16 +145,16 @@ namespace Enquirio.Tests {
         [Fact]
         public void TestExists() {
             RunTest((repo, repo2) => {
-                Assert.True(repo.Exists(e => e.Id == 1));
-                Assert.False(repo.Exists(e => e.Id == 999));
+                Assert.True(repo.Exists<Question>(e => e.Id == 1));
+                Assert.False(repo.Exists<Question>(e => e.Id == 999));
             });
         }
 
         [Fact]
         public void TestExistsAsync() {
             RunTest(asyncTest: async (repo, repo2) => {
-                Assert.True(await repo.Exists(e => e.Id == 1));
-                Assert.False(await repo.Exists(e => e.Id == 999));
+                Assert.True(await repo.ExistsAsync<Question>(e => e.Id == 1));
+                Assert.False(await repo.ExistsAsync<Question>(e => e.Id == 999));
             });
         }
 
