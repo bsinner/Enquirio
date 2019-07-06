@@ -74,8 +74,8 @@ namespace Enquirio.Tests.Tests.Controllers {
                 Assert.IsType<OkResult>(result);
                 mockRepo.Verify(repo => repo.Update(answer), Times.Once);
                 mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(e => e.Id == 1));
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(e => e.Id == answer.Id));
+                mockRepo.Verify(repo => repo.ExistsAsync<Question>(e => e.Id == 1), Times.Once);
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(e => e.Id == answer.Id), Times.Once);
             });
         }
 
@@ -106,6 +106,22 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void DeleteAnswerTest() {
+            RunTest(async (answer, errAnswer, mockRepo, controller) => {
+                
+                // Arrange
+                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == 10))
+                    .ReturnsAsync(true);
+
+                // Act
+                var result = await controller.DeleteAnswer(10);
+
+                // Assert
+                Assert.IsType<OkResult>(result);
+
+                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == 10), Times.Once);
+                mockRepo.Verify(repo => repo.DeleteById<Answer>(10), Times.Once);
+                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+            });
         }
 
         [Fact]
