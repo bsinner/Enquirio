@@ -16,7 +16,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var mockRepo = new Mock<IRepositoryEnq>();
 
             mockRepo.Setup(repo => repo.GetByIdAsync<Question>("1", new [] {"Answers"}, null))
-                    .Returns(Task.FromResult(QuestionData.TestQuestion));
+                    .ReturnsAsync(QuestionData.TestQuestion);
 
             QuestionController controller = new QuestionController(mockRepo.Object);
 
