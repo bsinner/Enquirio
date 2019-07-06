@@ -6,7 +6,7 @@ namespace Enquirio.Data {
         DateTime Created { get; set; }
         DateTime? Edited { get; set; }
 
-        String Title { get; set; }
-        String Contents { get; set; }
+        string Title { get; set; }
+        string Contents { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Enquirio.Data;
 
 namespace Enquirio.Models {
-    public class Question : IEntity, IPost {
+    public class Question : IPost {
 
         public int Id { get; set; }
         [Required]
