@@ -48,6 +48,18 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
+        [HttpDelete("deleteAnswer/{answerId}")]
+        public async Task<IActionResult> DeleteAnswer(int answerId) {
+            if (await EntityNotFound(aId : answerId)) {
+                return NotFound();
+            }
+
+            _repo.DeleteById<Answer>(answerId);
+            await _repo.SaveAsync();
+
+            return Ok();
+        }
+
         private bool InvalidEntity(IPost post) =>
             string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)
