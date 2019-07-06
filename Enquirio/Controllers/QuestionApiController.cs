@@ -34,7 +34,7 @@ namespace Enquirio.Controllers {
         [HttpPut("editAnswer/{questionId}")]
         [Consumes("application/json")]
         public async Task<IActionResult> EditAnswer([FromBody] Answer answer, int questionId) {
-            if (InvalidEntity(answer)) {
+            if (InvalidEntity(answer, false)) {
                 return BadRequest();
             }
 
@@ -63,7 +63,7 @@ namespace Enquirio.Controllers {
         [HttpPut("editQuestion")]
         public async Task<IActionResult> EditQuestion([FromBody] Question question) {
 
-            if (InvalidEntity(question)) {
+            if (InvalidEntity(question, false)) {
                 return BadRequest();
             }
 
@@ -77,11 +77,14 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
-        private bool InvalidEntity(IPost post) =>
+        // Return true if entity is invalid, bool zeroId specifies if 
+        // posts with ID #0 should be allowed
+        private bool InvalidEntity(IPost post, bool zeroId = true) =>
             string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)
-            || post.Id == 0;
+            || (!zeroId && post.Id == 0);
 
+        // Search db for entity, return true if it isn't found
         private async Task<bool> EntityNotFound(int? qId = null, int? aId = null) {
             bool errResult = true;
 
