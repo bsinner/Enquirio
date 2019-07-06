@@ -142,6 +142,22 @@ namespace Enquirio.Tests {
             });
         }
 
+        [Fact]
+        public void TestExists() {
+            RunTest((repo, repo2) => {
+                Assert.True(repo.Exists(e => e.Id == 1));
+                Assert.False(repo.Exists(e => e.Id == 999));
+            });
+        }
+
+        [Fact]
+        public void TestExistsAsync() {
+            RunTest(asyncTest: async (repo, repo2) => {
+                Assert.True(await repo.Exists(e => e.Id == 1));
+                Assert.False(await repo.Exists(e => e.Id == 999));
+            });
+        }
+
         // Create test data and pass repositories to access it in callback
         private void RunTest(Action<RepositoryEnq, RepositoryEnq> test = null
                 , Func<RepositoryEnq, RepositoryEnq, Task> asyncTest = null) {
