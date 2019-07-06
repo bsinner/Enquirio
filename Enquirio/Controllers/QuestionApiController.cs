@@ -12,16 +12,16 @@ namespace Enquirio.Controllers {
 
         public QuestionApiController(IRepositoryEnq repo) => _repo = repo;
 
-        [HttpPost("createAnswer/{id}")]
+        [HttpPost("createAnswer/{questionId}")]
         [Consumes("application/json")]
-        public async Task<string> CreateAnswer([FromBody] Answer answer, int questionId) {
+        public async Task<IActionResult> CreateAnswer([FromBody] Answer answer, int questionId) {
             answer.QuestionId = questionId;
 
             _repo.Create(answer);
 
             await _repo.SaveAsync();
 
-            return answer.Id.ToString();
+            return Ok(answer.Id.ToString());
         }
 
     }
