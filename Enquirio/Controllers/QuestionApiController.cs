@@ -12,18 +12,16 @@ namespace Enquirio.Controllers {
 
         public QuestionApiController(IRepositoryEnq repo) => _repo = repo;
 
-        [HttpPost("createAnswer/{questionId}")]
+        [HttpPost("createAnswer")]
         [Consumes("application/json")]
-        public async Task<IActionResult> CreateAnswer([FromBody] Answer answer, int questionId) {
+        public async Task<IActionResult> CreateAnswer([FromBody] Answer answer) {
             if (InvalidEntity(answer)) {
                 return BadRequest();
             }
 
-            if (await EntityNotFound(questionId)) {
+            if (await EntityNotFound(answer.QuestionId)) {
                 return NotFound();
             }
-
-            answer.QuestionId = questionId;
 
             _repo.Create(answer);
             await _repo.SaveAsync();
@@ -55,7 +53,7 @@ namespace Enquirio.Controllers {
 
         [HttpDelete("deleteAnswer/{answerId}")]
         public async Task<IActionResult> DeleteAnswer(int answerId) {
-            if (await EntityNotFound(aId : answerId)) {
+            if (await EntityNotFound(answerId)) {
                 return NotFound();
             }
 
@@ -94,21 +92,9 @@ namespace Enquirio.Controllers {
             || (!zeroId && post.Id == 0);
 
         // Search db for entity, return true if it isn't found
-        private async Task<bool> EntityNotFound(int? qId = null, int? aId = null) {
-            bool errResult = true;
-
-            if (qId != null) {
-                errResult = !await _repo.ExistsAsync<Question>(q => q.Id == qId);
-
-                if (errResult) return errResult;
-            }
-
-            if (aId != null) {
-                return !await _repo.ExistsAsync<Answer>(a => a.Id == aId);
-            }
-
-            return errResult;
-        }
+        private async Task<bool> EntityNotFound(int aId) 
+            => !await _repo.ExistsAsync<Answer>(a => a.Id == aId);
+        
             
             
     }

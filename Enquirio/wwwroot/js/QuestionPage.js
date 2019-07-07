@@ -23,12 +23,13 @@
         const newContent = document.getElementById("newAnsContent").value;
 
         $.ajax({
-            url : _baseUrl + "/api/createAnswer/" + _questionId
+            url : _baseUrl + "/api/createAnswer"
             , contentType : "application/json"
             , method : "POST"
             , data : JSON.stringify({
                 title : newTitle
                 , contents : newContent
+                , questionId : _questionId
             })
             , success : (e) => { location.reload(); }
         });
