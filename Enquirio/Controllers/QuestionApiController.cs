@@ -31,16 +31,21 @@ namespace Enquirio.Controllers {
             return Ok(answer.Id.ToString());
         }
 
-        [HttpPut("editAnswer/{questionId}")]
+        [HttpPut("editAnswer")]
         [Consumes("application/json")]
-        public async Task<IActionResult> EditAnswer([FromBody] Answer answer, int questionId) {
-            if (InvalidEntity(answer, false)) {
+        public async Task<IActionResult> EditAnswer([FromBody] Answer edited) {
+            if (InvalidEntity(edited, false)) {
                 return BadRequest();
             }
 
-            if (await EntityNotFound(questionId, answer.Id)) {
+            var answer = await _repo.GetByIdAsync<Answer>(edited.Id);
+
+            if (answer == null) {
                 return NotFound();
             }
+
+            answer.Title = edited.Title;
+            answer.Contents = edited.Contents;
 
             _repo.Update(answer);
             await _repo.SaveAsync();
@@ -62,15 +67,19 @@ namespace Enquirio.Controllers {
 
         [HttpPut("editQuestion")]
         [Consumes("application/json")]
-        public async Task<IActionResult> EditQuestion([FromBody] Question question) {
-
-            if (InvalidEntity(question, false)) {
+        public async Task<IActionResult> EditQuestion([FromBody] Question edited) {
+            if (InvalidEntity(edited, false)) {
                 return BadRequest();
             }
 
-            if (await EntityNotFound(question.Id)) {
+            var question = await _repo.GetByIdAsync<Question>(edited.Id);
+
+            if (question == null) {
                 return NotFound();
             }
+
+            question.Contents = edited.Contents;
+            question.Title = edited.Title;
 
             _repo.Update(question);
             await _repo.SaveAsync();
@@ -78,8 +87,7 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
-        // Return true if entity is invalid, bool zeroId specifies if 
-        // posts with ID #0 should be allowed
+        // Return true if entity is invalid, zeroId allows entities with ID 0
         private bool InvalidEntity(IPost post, bool zeroId = true) =>
             string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)
