@@ -10,6 +10,27 @@
             <div class="col-sm-8">
                 <h4>@Model.Question.Title</h4>
                 <p>@Model?.Question.Contents</p>
+                
+                <!-- Hidden edit question form -->
+                <div id="qEditForm">
+
+                    <br />
+                    <div>
+                        <input type="text" id="editQTitle" class="form-control" />
+                        <small id="editQTitleErr" class="text-danger" style="display: none;">Title must not be blank</small>
+                    </div>
+
+                    <br />
+                    <div>
+                        <textarea id="editQContents" rows="5" class="form-control"></textarea>
+                        <small id="editQContentsErr" class="text-danger" style="display: none;">Contents must not be blank</small>
+                    </div>
+                    
+                    <br />
+                    <button id="cancelQEdit" class="btn btn-outline-info float-right">Cancel</button>
+                    <button id="submitQEdit" class="btn btn-outline-dark float-right mr-2">Edit</button>
+
+                </div>
 
                 <br />
                 <i>Asked by Author on ##/##/###</i>
@@ -43,7 +64,7 @@
                     <button id="showAnsFormBtn" class="btn btn-outline-dark float-right">Answer</button>
                     <!-- Conditionally display these buttons when users are implemented -->
                     <button id="editQuestionBtn" class="btn btn-outline-info mr-2 float-right">Edit</button>
-                    <a asp-controller="Question" asp-action="Delete" asp-route-id="@Model.Question.Id" id="deleteQuestionBtn" class="btn btn-outline-info mr-2 float-right">Delete</a>
+                    <a asp-controller="Question" asp-action="Delete" asp-route-id="@Model.Question.Id" class="btn btn-outline-info mr-2 float-right">Delete</a>
                 </div>
                 <br /><br />
 
