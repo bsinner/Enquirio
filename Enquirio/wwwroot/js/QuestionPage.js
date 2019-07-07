@@ -14,6 +14,8 @@
     const _questionBtns = document.getElementById("questionBtns");
     const _editQForm = document.getElementById("qEditForm");
     const _qTextBtns = [document.getElementById("questionText"), _questionBtns];
+    const _qTitle = document.querySelector("#questionText > h4");
+    const _qContents = document.querySelector("#questionText > p");
 
     // Submit answer
     document.getElementById("submitAnswer").onclick = () => {
@@ -29,6 +31,28 @@
                 , contents : newContent
             })
             , success : (e) => { location.reload(); }
+        });
+    };
+
+    // Edit question
+    document.getElementById("submitQEdit").onclick = () => {
+        const newTitle = document.getElementById("editQTitle").value;
+        const newContent = document.getElementById("editQContents").value;
+
+        $.ajax({
+            url : _baseUrl + "/api/editQuestion"
+            , contentType : "application/json"
+            , method : "PUT"
+            , data : JSON.stringify({
+                title : newTitle
+                , contents : newContent
+                , id : _questionId
+            })
+            , success : () => {
+                _qTitle.innerText = newTitle;
+                _qContents.innerText = newContent;
+                _hideEditQ.onclick();
+            }
         });
     };
 

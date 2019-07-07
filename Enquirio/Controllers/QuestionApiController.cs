@@ -61,6 +61,7 @@ namespace Enquirio.Controllers {
         }
 
         [HttpPut("editQuestion")]
+        [Consumes("application/json")]
         public async Task<IActionResult> EditQuestion([FromBody] Question question) {
 
             if (InvalidEntity(question, false)) {
