@@ -8,53 +8,56 @@
 
         <div class="row justify-content-center">
             <div class="col-sm-8">
-                <h4>@Model.Question.Title</h4>
-                <p>@Model?.Question.Contents</p>
                 
-                <!-- Hidden edit question form -->
-                <div id="qEditForm">
+                <div id="questionText">
+                    <h4>@Model.Question.Title</h4>
+                    <p>@Model?.Question.Contents</p>
+                </div>
 
-                    <br />
+                <!-- Hidden edit question form -->
+                <div id="qEditForm" style="display: none;">
+
+                    <br/>
                     <div>
-                        <input type="text" id="editQTitle" class="form-control" />
+                        <input type="text" id="editQTitle" class="form-control"/>
                         <small id="editQTitleErr" class="text-danger" style="display: none;">Title must not be blank</small>
                     </div>
 
-                    <br />
+                    <br/>
                     <div>
                         <textarea id="editQContents" rows="5" class="form-control"></textarea>
                         <small id="editQContentsErr" class="text-danger" style="display: none;">Contents must not be blank</small>
                     </div>
-                    
-                    <br />
-                    <button id="cancelQEdit" class="btn btn-outline-info float-right">Cancel</button>
+
+                    <br/>
+                    <button id="hideQEdit" class="btn btn-outline-info float-right">Cancel</button>
                     <button id="submitQEdit" class="btn btn-outline-dark float-right mr-2">Edit</button>
 
                 </div>
 
-                <br />
+                <br/>
                 <i>Asked by Author on ##/##/###</i>
 
                 <!-- Hidden create answer form -->
                 <div class="form-group" id="answerForm" style="display: none;">
 
-                    <br />
+                    <br/>
                     <div>
                         <label asp-for="Answer.Title"></label>
-                        <input id="newAnsTitle" asp-for="Answer.Title" class="form-control" />
+                        <input id="newAnsTitle" asp-for="Answer.Title" class="form-control"/>
                         <small class="text-danger" style="display: none;">Title must not be blank</small>
                     </div>
 
-                    <br />
+                    <br/>
                     <div>
                         <label asp-for="Answer.Contents"></label>
                         <textarea id="newAnsContent" asp-for="Answer.Contents" class="form-control" rows="5"></textarea>
                         <small class="text-danger" style="display: none;">Contents must not be blank</small>
                     </div>
 
-                    <input type="hidden" asp-for="Answer.QuestionId" value="@Model.Question.Id" />
+                    <input type="hidden" asp-for="Answer.QuestionId" value="@Model.Question.Id"/>
 
-                    <br />
+                    <br/>
                     <a id="hideAnsFormBtn" class="btn btn-outline-info float-right">Cancel</a>
                     <button id="submitAnswer" class="btn btn-outline-dark float-right mr-2">Submit</button>
 
@@ -63,10 +66,10 @@
                 <div id="questionBtns">
                     <button id="showAnsFormBtn" class="btn btn-outline-dark float-right">Answer</button>
                     <!-- Conditionally display these buttons when users are implemented -->
-                    <button id="editQuestionBtn" class="btn btn-outline-info mr-2 float-right">Edit</button>
+                    <button id="showQEdit" class="btn btn-outline-info mr-2 float-right">Edit</button>
                     <a asp-controller="Question" asp-action="Delete" asp-route-id="@Model.Question.Id" class="btn btn-outline-info mr-2 float-right">Delete</a>
                 </div>
-                <br /><br />
+                <br/><br/>
 
             </div>
         </div>
