@@ -17,11 +17,9 @@ namespace Enquirio.Tests.Tests.Controllers {
         [Fact]
         public async Task CreateAnswerTest() {
             // Arrange
-
             var mockRepo = new Mock<IRepositoryEnq>();
             var answer = QuestionData.TestAnswer;
 
-            mockRepo.Setup(repo => repo.Create(answer));
             mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 50);
             mockRepo.Setup(repo => repo.ExistsAsync<Question>
             (It.IsAny<Expression<Func<Question, bool>>>()))
@@ -66,53 +64,50 @@ namespace Enquirio.Tests.Tests.Controllers {
         }
 
         [Fact]
-        public void EditAnswerTest() {
-            RunTest(async (answer, err, mockRepo, controller) => {
-                
-                // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == 1))
-                    .ReturnsAsync(true);
-                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == answer.Id))
-                    .ReturnsAsync(true);
+        public async Task EditAnswerTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
+            var answer = QuestionData.TestAnswer;
 
-                // Act
-                var result = await controller.EditAnswer((Answer)answer);
-                
-                // Assert
-                Assert.IsType<OkResult>(result);
-                mockRepo.Verify(repo => repo.Update(answer), Times.Once);
-                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>
-                    (q => q.Id == 1), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>
-                    (a => a.Id == answer.Id), Times.Once);
-                mockRepo.VerifyNoOtherCalls();
-            });
+            mockRepo.Setup(repo => repo.GetByIdAsync<Answer>(answer.Id, null, null))
+                .ReturnsAsync(answer);
+
+            var controller = new QuestionApiController(mockRepo.Object);
+
+            // Act
+            var result = await controller.EditAnswer(answer);
+            
+            // Assert
+            Assert.IsType<OkResult>(result);
+            mockRepo.Verify(repo => repo.Update(answer), Times.Once);
+            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+            mockRepo.Verify(repo => repo.GetByIdAsync<Answer>(answer.Id, null, null));
+            mockRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void EditAnswerErrorTest() {
-            RunTest(async (answer, errAnswer, mockRepo, controller) => {
-                
-                // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == answer.Id))
-                    .ReturnsAsync(false);
-                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == answer.Id))
-                    .ReturnsAsync(false);
+        public async Task EditAnswerErrorTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
+            var answer = QuestionData.TestAnswer;
+            var errAnswer = QuestionData.InvalidTestAnswer;
 
-                // Act
-                var notFoundResult = await controller.EditAnswer((Answer)answer);
-                var badReqResult = await controller.EditAnswer((Answer)errAnswer);
+            mockRepo.Setup(repo => repo.GetByIdAsync<Answer>(answer.Id, null, null))
+                .Returns(Task.FromResult<Answer>(null));
 
-                // Assert
-                Assert.IsType<NotFoundResult>(notFoundResult);
-                Assert.IsType<BadRequestResult>(badReqResult);
-                Assert.Equal(1, mockRepo.Invocations.Count);
+            var controller = new QuestionApiController(mockRepo.Object);
 
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>(q => q.Id == 99));
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>(a => a.Id == answer.Id));
-                mockRepo.VerifyNoOtherCalls();
-            });
+            // Act
+            var notFoundResult = await controller.EditAnswer(answer);
+            var badReqResult = await controller.EditAnswer(errAnswer);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(notFoundResult);
+            Assert.IsType<BadRequestResult>(badReqResult);
+            Assert.Equal(1, mockRepo.Invocations.Count);
+
+            mockRepo.Verify(repo => repo.GetByIdAsync<Answer>(answer.Id, null, null), Times.Once);
+            mockRepo.VerifyNoOtherCalls();
         }
 
         [Fact]

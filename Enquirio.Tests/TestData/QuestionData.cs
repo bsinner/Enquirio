@@ -16,7 +16,7 @@ namespace Enquirio.Tests.TestData {
             = new Question { Id = 0, Title = null, Contents = "", Created = DateTime.Now, Answers = new List<Answer>() };
 
         public static Answer TestAnswer
-            = new Answer { Id = 0, Title = "A1", Contents = "...", Created = DateTime.Now, QuestionId = 1 };
+            = new Answer { Id = 1, Title = "A1", Contents = "...", Created = DateTime.Now, QuestionId = 1 };
 
         public static Answer InvalidTestAnswer
             = new Answer { Id = 10, Title = "", Contents = null, Created = DateTime.Now, QuestionId = 1 };
