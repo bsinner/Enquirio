@@ -19,7 +19,7 @@ namespace Enquirio.Controllers {
                 return BadRequest();
             }
 
-            if (await EntityNotFound(answer.QuestionId)) {
+            if (await EntityNotFound(qId : answer.QuestionId)) {
                 return NotFound();
             }
 
@@ -92,10 +92,19 @@ namespace Enquirio.Controllers {
             || (!zeroId && post.Id == 0);
 
         // Search db for entity, return true if it isn't found
-        private async Task<bool> EntityNotFound(int aId) 
-            => !await _repo.ExistsAsync<Answer>(a => a.Id == aId);
+        private async Task<bool> EntityNotFound(int? aId = null, int? qId = null) {
+            bool notFound = true;
+
+            if (aId != null) {
+                notFound = !await _repo.ExistsAsync<Answer>(a => a.Id == aId);
+            }
+
+            if (qId != null) {
+                notFound = !await _repo.ExistsAsync<Question>(q => q.Id == qId);
+            }
+
+            return notFound;
+        }
         
-            
-            
     }
 }
