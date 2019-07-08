@@ -54,7 +54,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var question = QuestionData.TestQuestion;
             var mockRepo = new Mock<IRepositoryEnq>();
 
-            mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => question.Id = 1);
+            mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => question.Id = 99);
 
             var controller = new QuestionController(mockRepo.Object);
 
@@ -62,7 +62,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             RedirectToRouteResult result = await controller.Create(question);
 
             // Assert
-            Assert.Equal(1, question.Id);
+            Assert.Equal(99, question.Id);
             Assert.Equal(question.Id, result.RouteValues["id"]);
             Assert.Equal("question", result.RouteName);
 
