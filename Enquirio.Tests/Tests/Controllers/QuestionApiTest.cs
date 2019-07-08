@@ -15,27 +15,32 @@ namespace Enquirio.Tests.Tests.Controllers {
     public class QuestionApiTest {
         
         [Fact]
-        public void CreateAnswerTest() {
-            RunTest(async (answer, err, mockRepo, controller) => {
-                
-                // Arrange
-                mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 50);
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == 1))
-                    .ReturnsAsync(true);
+        public async Task CreateAnswerTest() {
+            // Arrange
 
-                // Act
-                var result = await controller
-                    .CreateAnswer((Answer) answer) as OkObjectResult;
+            var mockRepo = new Mock<IRepositoryEnq>();
+            var answer = QuestionData.TestAnswer;
 
-                // Assert
-                Assert.Equal("50", result.Value);
+            mockRepo.Setup(repo => repo.Create(answer));
+            mockRepo.Setup(repo => repo.SaveAsync()).Callback(() => answer.Id = 50);
+            mockRepo.Setup(repo => repo.ExistsAsync<Question>
+            (It.IsAny<Expression<Func<Question, bool>>>()))
+                .ReturnsAsync(true);
+
+            var controller = new QuestionApiController(mockRepo.Object);
+
+            // Act
+            var result = await controller.CreateAnswer(answer);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result);
+            Assert.Equal("50", (result as OkObjectResult).Value);
                 
-                mockRepo.Verify(repo => repo.Create(answer), Times.Once);
-                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>
-                    (q => q.Id == 1), Times.Once);
-                mockRepo.VerifyNoOtherCalls();
-            });
+            mockRepo.Verify(repo => repo.Create(answer), Times.Once);
+            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+            mockRepo.Verify(repo => repo.ExistsAsync<Question>
+                (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+            mockRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
