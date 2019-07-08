@@ -42,25 +42,27 @@ namespace Enquirio.Tests.Tests.Controllers {
         }
 
         [Fact]
-        public void CreateAnswerErrorTest() {
-            RunTest(async (answer, errAnswer, mockRepo, controller) => {
-                
-                // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == answer.Id))
-                    .ReturnsAsync(false);
+        public async Task CreateAnswerErrorTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
+            var answer = QuestionData.TestAnswer;
+            var errAnswer = QuestionData.InvalidTestAnswer;
 
-                // Act
-                var notFoundResult = await controller.CreateAnswer((Answer)answer);
-                var badReqResult = await controller.CreateAnswer((Answer)errAnswer);
+            mockRepo.Setup(repo => repo.ExistsAsync<Question>(q => q.Id == answer.Id))
+                .ReturnsAsync(false);
 
-                // Assert
-                Assert.IsType<BadRequestResult>(badReqResult);
-                Assert.IsType<NotFoundResult>(notFoundResult);
+            var controller = new QuestionApiController(mockRepo.Object);
+            // Act
+            var notFoundResult = await controller.CreateAnswer(answer);
+            var badReqResult = await controller.CreateAnswer(errAnswer);
 
-                mockRepo.Verify(repo => repo.ExistsAsync<Question>
-                    (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
-                mockRepo.VerifyNoOtherCalls();
-            });
+            // Assert
+            Assert.IsType<BadRequestResult>(badReqResult);
+            Assert.IsType<NotFoundResult>(notFoundResult);
+
+            mockRepo.Verify(repo => repo.ExistsAsync<Question>
+                (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+            mockRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -111,45 +113,47 @@ namespace Enquirio.Tests.Tests.Controllers {
         }
 
         [Fact]
-        public void DeleteAnswerTest() {
-            RunTest(async (answer, err, mockRepo, controller) => {
-                
-                // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == 10))
-                    .ReturnsAsync(true);
+        public async Task DeleteAnswerTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
 
-                // Act
-                var result = await controller.DeleteAnswer(10);
+            mockRepo.Setup(repo => repo.ExistsAsync<Answer>
+                    (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(true);
 
-                // Assert
-                Assert.IsType<OkResult>(result);
+            var controller = new QuestionApiController(mockRepo.Object);
 
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>
-                    (a => a.Id == 10), Times.Once);
-                mockRepo.Verify(repo => repo.DeleteById<Answer>(10), Times.Once);
-                mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
-                mockRepo.VerifyNoOtherCalls();
-            });
+            // Act
+            var result = await controller.DeleteAnswer(10);
+
+            // Assert
+            Assert.IsType<OkResult>(result);
+
+            mockRepo.Verify(repo => repo.ExistsAsync<Answer>
+                (It.IsAny<Expression<Func<Answer, bool>>>()), Times.Once);
+            mockRepo.Verify(repo => repo.DeleteById<Answer>(10), Times.Once);
+            mockRepo.Verify(repo => repo.SaveAsync(), Times.Once);
+            mockRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public void DeleteAnswerErrorTest() {
-            RunTest(async (answer, errAnswer, mockRepo, controller) => {
+        public async Task DeleteAnswerErrorTest() {
+            // Arrange
+            var mockRepo = new Mock<IRepositoryEnq>();
 
-                // Arrange
-                mockRepo.Setup(repo => repo.ExistsAsync<Answer>(a => a.Id == 999))
-                    .ReturnsAsync(false);
+            mockRepo.Setup(repo => repo.ExistsAsync<Answer>
+                    (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(false);
 
-                // Act
-                var result = await controller.DeleteAnswer(999);
+            var controller = new QuestionApiController(mockRepo.Object);
 
-                // Assert
-                Assert.IsType<NotFoundResult>(result);
+            // Act
+            var result = await controller.DeleteAnswer(999);
 
-                mockRepo.Verify(repo => repo.ExistsAsync<Answer>
-                    (a => a.Id == 999), Times.Once);
-                mockRepo.VerifyNoOtherCalls();
-            });
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+
+            mockRepo.Verify(repo => repo.ExistsAsync<Answer>
+                (It.IsAny<Expression<Func<Answer, bool>>>()), Times.Once);
+            mockRepo.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -213,27 +217,6 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion)
                 , typeof(HttpPutAttribute)));
-        }
-
-        // Run test, pass valid entity, invalid entity, repository, and controller
-        private void RunTest(Func<IPost, IPost, Mock<IRepositoryEnq>, QuestionApiController, Task> test
-            , bool questionTest = false) {
-
-            IPost entity;
-            IPost invalidEntity;
-
-            if (!questionTest) {
-                entity = QuestionData.TestAnswer;
-                invalidEntity = QuestionData.InvalidTestAnswer;
-            } else {
-                entity = QuestionData.TestQuestion;
-                invalidEntity = QuestionData.InvalidTestQuestion;
-            }
-
-            var repo = new Mock<IRepositoryEnq>();
-            var controller = new QuestionApiController(repo.Object);
-
-            test.Invoke(entity, invalidEntity, repo, controller);
         }
 
         private bool HasAttribute(String method, Type attribute) {
