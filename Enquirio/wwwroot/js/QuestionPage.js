@@ -31,8 +31,18 @@
                 , document.querySelector(id + " .answerBtns")
             ];
 
+            // Set up show hide buttons
             addShowEditAnswer(show, form, txtAndBtns);
             addHideEditAnswer(hide, txtAndBtns, form);
+
+            // Submit button event handler
+            form.querySelector(".submitEditAnswer").onclick = () => {
+                const title = form.querySelector(".editAnswerTitle").value;
+                const contents = form.querySelector(".editAnswerContents").value;
+
+                editAnswerAjax(txtAndBtns[0], title, contents
+                    , id.replace("#" + _answerIdPrefix, ""), hide.onclick);
+            };
         });
     })();
 
@@ -57,7 +67,7 @@
     // Edit question
     document.getElementById("submitQEdit").onclick = () => {
         const newTitle = document.getElementById("editQTitle").value;
-        const newContent = document.getElementById("editQContents").value;
+        const newContents = document.getElementById("editQContents").value;
 
         $.ajax({
             url : _baseUrl + "/api/editQuestion"
@@ -65,16 +75,35 @@
             , method : "PUT"
             , data : JSON.stringify({
                 title : newTitle
-                , contents : newContent
+                , contents : newContents
                 , id : _questionId
             })
             , success : () => {
                 _qTitle.innerText = newTitle;
-                _qContents.innerText = newContent;
+                _qContents.innerText = newContents;
                 _hideEditQ.onclick();
             }
         });
     };
+
+    // Submit an answer edit, hide is the hide edit form's onclick value
+    function editAnswerAjax(answerText, newTitle, newContents, anId, hide) {
+        $.ajax({
+            url : _baseUrl + "/api/editAnswer"
+            , contentType : "application/json"
+            , method : "PUT"
+            , data : JSON.stringify({
+                title : newTitle
+                , contents : newContents
+                , id : anId
+            })
+            , success : () => {
+                answerText.querySelector("h4").innerText = newTitle;
+                answerText.querySelector("p").innerText = newContents;
+                hide();
+            }
+        });
+    }
 
     // Hide edit question form
     _hideEditQ.onclick = () => {
