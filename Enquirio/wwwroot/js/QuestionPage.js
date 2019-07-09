@@ -13,9 +13,12 @@
     const _newAnswerForm = document.getElementById("answerForm");
     const _questionBtns = document.getElementById("questionBtns");
     const _editQForm = document.getElementById("qEditForm");
+    const _editQTitle = document.getElementById("editQTitle");
+    const _editQContents = document.getElementById("editQContents");
     const _qTextBtns = [document.getElementById("questionText"), _questionBtns];
     const _qTitle = document.querySelector("#questionText > h4");
     const _qContents = document.querySelector("#questionText > p");
+
 
     // Add handlers to answers
     (function setUpAnswers() {
@@ -27,21 +30,25 @@
             const form = document.querySelector(id + " .answerEditForm");
             const show = document.querySelector(id + " .editAnsBtn");
             const hide = document.querySelector(id + " .hideEditAnswer");
+            const titleIn = form.querySelector(".editAnswerTitle");
+            const contentsIn = form.querySelector(".editAnswerContents");
             const txtAndBtns = [
                 document.querySelector(id + " .answerText")
-                , document.querySelector(id + " .answerBtns")
-            ];
+                , document.querySelector(id + " .answerBtns") ];
+            const titleOrig = txtAndBtns[0].querySelector("h4");
+            const contentsOrig = txtAndBtns[0].querySelector("p");
 
             // Set up show hide buttons
-            addShowEditAnswer(show, form, txtAndBtns);
-            addHideEditAnswer(hide, txtAndBtns, form);
+            addShowEditAnswer(show, form, txtAndBtns, () => {
+                titleIn.value = titleOrig.innerText;
+                contentsIn.value = contentsOrig.innerText;
+            });
+            addHideEditAnswer(hide, form, txtAndBtns);
 
             // Submit button event handler
             form.querySelector(".submitEditAnswer").onclick = () => {
-                const title = form.querySelector(".editAnswerTitle").value;
-                const contents = form.querySelector(".editAnswerContents").value;
-
-                editAnswerAjax(txtAndBtns[0], title, contents, idInt, hide.onclick);
+                editAnswerAjax(titleOrig, contentsOrig, titleIn.value, contentsIn.value
+                    , idInt, hide.onclick);
             };
 
             // Delete button event handler
@@ -71,8 +78,8 @@
 
     // Edit question
     document.getElementById("submitQEdit").onclick = () => {
-        const newTitle = document.getElementById("editQTitle").value;
-        const newContents = document.getElementById("editQContents").value;
+        const newTitle = _editQTitle.value;
+        const newContents = _editQContents.value;
 
         $.ajax({
             url : _baseUrl + "/api/editQuestion"
@@ -92,7 +99,7 @@
     };
 
     // Submit an answer edit, hide is the hide edit form's onclick value
-    function editAnswerAjax(answerText, newTitle, newContents, anId, hide) {
+    function editAnswerAjax(origTitle, origContents, newTitle, newContents, anId, hide) {
         $.ajax({
             url : _baseUrl + "/api/editAnswer"
             , contentType : "application/json"
@@ -102,9 +109,9 @@
                 , contents : newContents
                 , id : anId
             })
-            , success : () => {
-                answerText.querySelector("h4").innerText = newTitle;
-                answerText.querySelector("p").innerText = newContents;
+            , success: () => {
+                origTitle.innerText = newTitle;
+                origContents.innerText = newContents;
                 hide();
             }
         });
@@ -129,6 +136,8 @@
 
     // Show edit question form
     document.getElementById("showQEdit").onclick = () => {
+        _editQTitle.value = _qTitle.innerText;
+        _editQContents.value = _qContents.innerText;
         toggleElements(_editQForm, _qTextBtns);
     }
 
@@ -143,16 +152,17 @@
     };
 
     // Show answer's edit form
-    function addShowEditAnswer(btn, toShow, toHide) {
+    function addShowEditAnswer(btn, form, txtAndBtns, callback) {
         btn.onclick = () => {
-            toggleElements(toShow, toHide);
+            callback();
+            toggleElements(form, txtAndBtns);
         };
     };
 
     // Hide answer's edit form
-    function addHideEditAnswer(btn, toShow, toHide) {
+    function addHideEditAnswer(btn, form, txtAndBtns) {
         btn.onclick = () => {
-            toggleElements(toShow, toHide);
+            toggleElements(txtAndBtns, form);
         };
     };
 
