@@ -23,6 +23,7 @@
 
             // Elements
             const id = "#" + elem.getAttribute("id");
+            const idInt = id.replace("#" + _answerIdPrefix, "");
             const form = document.querySelector(id + " .answerEditForm");
             const show = document.querySelector(id + " .editAnsBtn");
             const hide = document.querySelector(id + " .hideEditAnswer");
@@ -40,9 +41,13 @@
                 const title = form.querySelector(".editAnswerTitle").value;
                 const contents = form.querySelector(".editAnswerContents").value;
 
-                editAnswerAjax(txtAndBtns[0], title, contents
-                    , id.replace("#" + _answerIdPrefix, ""), hide.onclick);
+                editAnswerAjax(txtAndBtns[0], title, contents, idInt, hide.onclick);
             };
+
+            // Delete button event handler
+            txtAndBtns[1].querySelector(".deleteAnsBtn").onclick = () => {
+                deleteAnswer(idInt, elem);
+            }
         });
     })();
 
@@ -101,6 +106,18 @@
                 answerText.querySelector("h4").innerText = newTitle;
                 answerText.querySelector("p").innerText = newContents;
                 hide();
+            }
+        });
+    }
+
+    // Delete an answer
+    function deleteAnswer(id, answer) {
+        $.ajax({
+            url : _baseUrl + "/api/deleteAnswer/" + id
+            , contentType : "application/json"
+            , method : "DELETE"
+            , success : () => {
+                answer.parentNode.removeChild(answer);
             }
         });
     }
