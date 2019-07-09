@@ -3,11 +3,11 @@
     // Global vars
     const _questionId = document.getElementById("qid").innerText;
     const _baseUrl = document.getElementById("basePath").innerText.trim();
+    const _answerIdPrefix = "an";
 
     // Buttons
     const _hideEditQ = document.getElementById("hideQEdit");
     const _hideNewA = document.getElementById("hideAnsFormBtn");
-    // const _hideEditA = document.getElementById("");
 
     // Elements
     const _newAnswerForm = document.getElementById("answerForm");
@@ -16,6 +16,25 @@
     const _qTextBtns = [document.getElementById("questionText"), _questionBtns];
     const _qTitle = document.querySelector("#questionText > h4");
     const _qContents = document.querySelector("#questionText > p");
+
+    // Add handlers to answers
+    (function setUpAnswers() {
+        document.querySelectorAll(".answer").forEach(elem => {
+
+            // Elements
+            const id = "#" + elem.getAttribute("id");
+            const form = document.querySelector(id + " .answerEditForm");
+            const show = document.querySelector(id + " .editAnsBtn");
+            const hide = document.querySelector(id + " .hideEditAnswer");
+            const txtAndBtns = [
+                document.querySelector(id + " .answerText")
+                , document.querySelector(id + " .answerBtns")
+            ];
+
+            addShowEditAnswer(show, form, txtAndBtns);
+            addHideEditAnswer(hide, txtAndBtns, form);
+        });
+    })();
 
     // Submit answer
     document.getElementById("submitAnswer").onclick = () => {
@@ -75,6 +94,20 @@
     // Show create answer form
     document.getElementById("showAnsFormBtn").onclick = () => {
         toggleElements(_newAnswerForm, _questionBtns);
+    };
+
+    // Show answer's edit form
+    function addShowEditAnswer(btn, toShow, toHide) {
+        btn.onclick = () => {
+            toggleElements(toShow, toHide);
+        };
+    };
+
+    // Hide answer's edit form
+    function addHideEditAnswer(btn, toShow, toHide) {
+        btn.onclick = () => {
+            toggleElements(toShow, toHide);
+        };
     };
 
     // Show one element, hide the other
