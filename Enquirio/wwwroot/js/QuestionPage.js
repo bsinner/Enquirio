@@ -47,6 +47,10 @@
 
             // Submit button event handler
             form.querySelector(".submitEditAnswer").onclick = () => {
+                const err1 = showErrIfEmpty(titleIn);
+                const err2 = showErrIfEmpty(contentsIn);
+                if (err1 || err2) return;
+
                 editAnswerAjax(titleOrig, contentsOrig, titleIn.value, contentsIn.value
                     , idInt, hide.onclick);
             };
@@ -60,16 +64,20 @@
 
     // Submit answer
     document.getElementById("submitAnswer").onclick = () => {
-        const newTitle = document.getElementById("newAnsTitle").value;
-        const newContent = document.getElementById("newAnsContent").value;
+        const newTitle = document.getElementById("newAnsTitle");
+        const newContent = document.getElementById("newAnsContent");
+
+        const err1 = showErrIfEmpty(newTitle);
+        const err2 = showErrIfEmpty(newContent);
+        if (err1 || err2) return;
 
         $.ajax({
             url : _baseUrl + "/api/createAnswer"
             , contentType : "application/json"
             , method : "POST"
             , data : JSON.stringify({
-                title : newTitle
-                , contents : newContent
+                title : newTitle.value
+                , contents : newContent.value
                 , questionId : _questionId
             })
             , success : (e) => { location.reload(); }
@@ -78,6 +86,11 @@
 
     // Edit question
     document.getElementById("submitQEdit").onclick = () => {
+
+        const err1 = showErrIfEmpty(_editQTitle);
+        const err2 = showErrIfEmpty(_editQContents);
+        if (err1 || err2) return;
+
         const newTitle = _editQTitle.value;
         const newContents = _editQContents.value;
 
@@ -185,6 +198,39 @@
         }
     }
 
-    // Clear form errors
-    function clearErrState() {}
+    // Highlight input and show error if blank, input must be in a div,
+    // with a small element for an error to be shown
+    function showErrIfEmpty(input, msg = null) {
+        if (input.value === null || input.value.trim() === "") {
+
+            const small = input.parentElement.querySelector("small");
+            // Empty input in case its value is whitespace characters
+            input.value = "";
+
+            if (msg) {
+                showError(input, small, msg);
+            } else {
+                showError(input, small);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // Highlight input, show error message
+    function showError(input, small, msg = null) {
+        if (msg) {
+            small.innerText = msg;
+        }
+
+        input.classList.add("is-invalid");
+        small.removeAttribute("style");
+
+        input.oninput = () => {
+            input.classList.remove("is-invalid");
+            small.setAttribute("style", "display: none;");
+        };
+    }
 };
