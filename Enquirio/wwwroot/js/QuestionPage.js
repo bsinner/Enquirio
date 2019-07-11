@@ -144,6 +144,7 @@
 
     // Hide edit question form
     _hideEditQ.onclick = () => {
+        clearErrors(_hideEditQ.parentElement);
         toggleElements(_qTextBtns, _editQForm);
     }
 
@@ -156,6 +157,7 @@
 
     // Hide create answer form
     _hideNewA.onclick = () => {
+        clearErrors(_hideNewA.parentElement);
         toggleElements(_questionBtns, _newAnswerForm);
     };
 
@@ -176,6 +178,7 @@
     function addHideEditAnswer(btn, form, txtAndBtns) {
         btn.onclick = () => {
             toggleElements(txtAndBtns, form);
+            clearErrors(btn.parentElement);
         };
     };
 
@@ -232,5 +235,17 @@
             input.classList.remove("is-invalid");
             small.setAttribute("style", "display: none;");
         };
+    }
+
+    // Hides small elements with class text-danger, un-highlights elements
+    // with class is-invalid
+    function clearErrors(div) {
+        div.querySelectorAll("small.text-danger").forEach(elem => {
+            elem.setAttribute("style", "display: none;");
+        });
+
+        div.querySelectorAll(".is-invalid").forEach(elem => {
+            elem.classList.remove("is-invalid");
+        });
     }
 };
