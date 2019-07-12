@@ -21,6 +21,7 @@
 
     // Helper objects
     const _util = new QuestionPageUtils();
+    const _requests = new QuestionPageRequests(_baseUrl);
 
     // Add handlers to answers
     (function setUpAnswers() {
@@ -76,17 +77,8 @@
             return;
         }
 
-        $.ajax({
-            url : _baseUrl + "/api/createAnswer"
-            , contentType : "application/json"
-            , method : "POST"
-            , data : JSON.stringify({
-                title : newTitle.value
-                , contents : newContent.value
-                , questionId : _questionId
-            })
-            , success : (e) => { location.reload(); }
-        });
+        _requests.createAnswer(newTitle.value, newContent.value
+            , _questionId, () => { location.reload(); });
     };
 
     // Edit question
@@ -100,51 +92,28 @@
         const newTitle = _editQTitle.value;
         const newContents = _editQContents.value;
 
-        $.ajax({
-            url : _baseUrl + "/api/editQuestion"
-            , contentType : "application/json"
-            , method : "PUT"
-            , data : JSON.stringify({
-                title : newTitle
-                , contents : newContents
-                , id : _questionId
-            })
-            , success : () => {
+        _requests.editQuestion(newTitle, newContents
+            , _questionId, () => {
                 _qTitle.innerText = newTitle;
                 _qContents.innerText = newContents;
                 _hideEditQ.onclick();
-            }
-        });
+            });
     };
 
     // Submit an answer edit, hide is the hide edit form's onclick value
     function editAnswerAjax(origTitle, origContents, newTitle, newContents, anId, hide) {
-        $.ajax({
-            url : _baseUrl + "/api/editAnswer"
-            , contentType : "application/json"
-            , method : "PUT"
-            , data : JSON.stringify({
-                title : newTitle
-                , contents : newContents
-                , id : anId
-            })
-            , success: () => {
-                origTitle.innerText = newTitle;
-                origContents.innerText = newContents;
-                hide();
-            }
+
+        _requests.editAnswer(newTitle, newContents, anId, () => {
+            origTitle.innerText = newTitle;
+            origContents.innerText = newContents;
+            hide();
         });
     }
 
     // Delete an answer
     function deleteAnswer(id, answer) {
-        $.ajax({
-            url : _baseUrl + "/api/deleteAnswer/" + id
-            , contentType : "application/json"
-            , method : "DELETE"
-            , success : () => {
-                answer.parentNode.removeChild(answer);
-            }
+        _requests.deleteAnswer(id, () => {
+            answer.parentNode.removeChild(answer);
         });
     }
 
