@@ -52,7 +52,7 @@ function QuestionPageUtils() {
 
     // Hide all of a divs small elements containing error class text-danger, 
     // un-highlight form fields with error class is-invalid
-    this.clearErrors(div) {
+    this.clearErrors = div => {
         div.querySelectorAll("small.text-danger").forEach(elem => {
             hide(elem);
         });
