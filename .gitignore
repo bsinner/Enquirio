@@ -1,7 +1,10 @@
 # Created by https://www.gitignore.io/api/visualstudio
 
-# Third party libraries
+# Third party librarys (bootstrap, jquery)
 Enquirio/wwwroot/lib/
+
+# Db access
+Enquirio/appsettings.json
 
 # Generated migrations
 Enquirio/Migrations/

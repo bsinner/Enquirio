@@ -9,9 +9,9 @@ namespace Enquirio {
     public class Startup {
 
         public IConfiguration Configuration { get; }
-        private string URL =
-            "Server=(localdb)\\MSSQLLocalDB;Database=Enquirio;"
-            + "Trusted_Connection=True;MultipleActiveResultSets=true";
+//        private string URL =
+//            "Server=(localdb)\\MSSQLLocalDB;Database=Enquirio;"
+//            + "Trusted_Connection=True;MultipleActiveResultSets=true";
 
         public Startup(IConfiguration configuration) {
             Configuration = configuration;
@@ -21,8 +21,11 @@ namespace Enquirio {
         public void ConfigureServices(IServiceCollection services) {
             services.AddMvc();
 
-            services.AddDbContext<DbContextEnq>
-                    (options => options.UseSqlServer(URL));
+            services.AddDbContext<DbContextEnq>(options => {
+                options.UseSqlServer(
+                    Configuration["ConnectionStrings:DefaultConnection"]
+                );
+            });
 
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
         }
