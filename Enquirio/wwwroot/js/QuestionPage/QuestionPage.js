@@ -184,22 +184,22 @@
 
     // Show one element, hide the other
     // params can be one element or an array of elements
-    function toggleElements(toShow, toHide) {
-        const show = e => e.removeAttribute("style");
-        const hide = e => e.setAttribute("style", "display: none;");
-
-        if (toShow instanceof Array) {
-            toShow.forEach(e => { show(e); });
-        } else {
-            show(toShow);
-        }
-
-        if (toHide instanceof Array) {
-            toHide.forEach(e => { hide(e); });
-        } else {
-            hide(toHide);
-        }
-    }
+//    function toggleElements(toShow, toHide) {
+//        const show = e => e.removeAttribute("style");
+//        const hide = e => e.setAttribute("style", "display: none;");
+//
+//        if (toShow instanceof Array) {
+//            toShow.forEach(e => { show(e); });
+//        } else {
+//            show(toShow);
+//        }
+//
+//        if (toHide instanceof Array) {
+//            toHide.forEach(e => { hide(e); });
+//        } else {
+//            hide(toHide);
+//        }
+//    }
 
     // Highlight input and show error if blank, input must be in a div,
     // with a small element for an error to be shown
