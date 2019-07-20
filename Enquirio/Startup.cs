@@ -9,9 +9,6 @@ namespace Enquirio {
     public class Startup {
 
         public IConfiguration Configuration { get; }
-//        private string URL =
-//            "Server=(localdb)\\MSSQLLocalDB;Database=Enquirio;"
-//            + "Trusted_Connection=True;MultipleActiveResultSets=true";
 
         public Startup(IConfiguration configuration) {
             Configuration = configuration;
