@@ -2,11 +2,9 @@
 
 # Custom
 Enquirio/wwwroot/lib/
-Enquirio/appsettings.json
 Enquirio/Migrations/
 *node_modules/
 Enquirio/wwwroot/dist/
-
 
 # User-specific files
 *.rsuser
