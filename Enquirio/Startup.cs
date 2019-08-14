@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using VueCliMiddleware;
 
 namespace Enquirio {
     public class Startup {
@@ -14,10 +15,10 @@ namespace Enquirio {
             Configuration = configuration;
         }
 
-        // Set up services
-        public void ConfigureServices(IServiceCollection services) {
+        public virtual void ConfigureServices(IServiceCollection services) {
             services.AddMvc();
 
+            // Add DB
             services.AddDbContext<DbContextEnq>(options => {
                 options.UseSqlServer(
                     Configuration["ConnectionStrings:DefaultConnection"]
@@ -25,20 +26,24 @@ namespace Enquirio {
             });
 
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
+
+            // Needed for UseSpaStaticFiles in Configure
+            services.AddSpaStaticFiles(config => config.RootPath = "frontend/dist");
         }
 
-        // Middleware
-        public void Configure(IApplicationBuilder builder, IHostingEnvironment env) {
-            if (env.IsDevelopment()) {
-                builder.UseDeveloperExceptionPage();
-            }
+        public virtual void Configure(IApplicationBuilder builder, IHostingEnvironment env) {
 
-            builder.UseStaticFiles()
-                .UseMvc(routes => {
-                    routes.MapRoute("default", "{controller=Home}/{action=Index}");
-                    routes.MapRoute("question", "question/{id?}",
-                        new {controller = "Question", action = "ViewQuestion"});
-                });
+            builder.UseSpaStaticFiles();
+
+            builder.UseSpa(spa => {
+                spa.Options.SourcePath = "frontend";
+
+                if (env.IsDevelopment()) {
+                    // Run npm serve on port 8080
+                    spa.UseVueCli("serve");
+                }
+            });
+
         }
     }
 }
