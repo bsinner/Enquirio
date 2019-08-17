@@ -1,6 +1,7 @@
 ﻿using Enquirio.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +16,9 @@ namespace Enquirio {
             Configuration = configuration;
         }
 
-        public virtual void ConfigureServices(IServiceCollection services) {
-            services.AddMvc();
+        // Set up services
+        public void ConfigureServices(IServiceCollection services) {
+            services.AddControllers();
 
             // Add DB
             services.AddDbContext<DbContextEnq>(options => {
@@ -27,23 +29,26 @@ namespace Enquirio {
 
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
 
-            // Needed for UseSpaStaticFiles in Configure
-            services.AddSpaStaticFiles(config => config.RootPath = "frontend/dist");
         }
 
-        public virtual void Configure(IApplicationBuilder builder, IHostingEnvironment env) {
+        // Middleware
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
 
-            builder.UseSpaStaticFiles();
+            app.UseRouting();
 
-            builder.UseSpa(spa => {
-                spa.Options.SourcePath = "frontend";
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
 
-                if (env.IsDevelopment()) {
-                    // Run npm serve on port 8080
-                    spa.UseVueCli("serve");
-                }
+                #if DEBUG
+                    if (System.Diagnostics.Debugger.IsAttached) {
+                        endpoints.MapToVueCliProxy("{*path}"
+                            , new SpaOptions {SourcePath = "frontend"}
+                            , "serve", regex: "Compiled successfully");
+                    }
+                #endif
+
+                endpoints.MapFallbackToFile("index.html");
             });
-
         }
     }
 }
