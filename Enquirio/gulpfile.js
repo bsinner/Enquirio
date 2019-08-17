@@ -7,7 +7,7 @@ const clean = require("gulp-clean");
 
 // Delete contents of dist
 function cleanDist() {
-    return src("wwwroot/dist")
+    return src("wwwroot/dist", { allowEmpty : true })
         .pipe(clean());
 }
 

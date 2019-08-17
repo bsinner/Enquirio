@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Enquirio {
     public class Startup {
@@ -16,7 +17,8 @@ namespace Enquirio {
 
         // Set up services
         public void ConfigureServices(IServiceCollection services) {
-            services.AddMvc();
+            services.AddControllers();
+            services.AddRazorPages();
 
             services.AddDbContext<DbContextEnq>(options => {
                 options.UseSqlServer(
@@ -28,17 +30,19 @@ namespace Enquirio {
         }
 
         // Middleware
-        public void Configure(IApplicationBuilder builder, IHostingEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             if (env.IsDevelopment()) {
-                builder.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
             }
 
-            builder.UseStaticFiles()
-                .UseMvc(routes => {
-                    routes.MapRoute("default", "{controller=Home}/{action=Index}");
-                    routes.MapRoute("question", "question/{id?}",
+            app.UseStaticFiles();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints => {
+                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
+                    endpoints.MapControllerRoute("question", "question/{id?}",
                         new {controller = "Question", action = "ViewQuestion"});
-                });
+            });
         }
     }
 }
