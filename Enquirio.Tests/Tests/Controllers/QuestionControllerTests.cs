@@ -8,7 +8,7 @@ using Moq;
 using Xunit;
 
 namespace Enquirio.Tests.Tests.Controllers {
-    public class QuestionTest {
+    public class QuestionControllerTests {
 
         [Fact]
         public async void ViewQuestionTest() {

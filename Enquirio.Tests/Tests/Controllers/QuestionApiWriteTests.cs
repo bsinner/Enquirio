@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Enquirio.Controllers;
 using Enquirio.Data;
 using Enquirio.Models;
@@ -12,7 +10,7 @@ using Moq;
 using Xunit;
 
 namespace Enquirio.Tests.Tests.Controllers {
-    public class QuestionApiTest {
+    public class QuestionApiWriteTests : ApiTestUtil {
         
         [Fact]
         public async Task CreateAnswerTest() {
@@ -218,13 +216,5 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion)
                 , typeof(HttpPutAttribute)));
         }
-
-        private bool HasAttribute(String method, Type attribute) {
-            return !typeof(QuestionApiController)
-                .GetMethod(method)
-                .GetCustomAttributes(attribute)
-                .IsNullOrEmpty();
-        }
-
     }
 }
