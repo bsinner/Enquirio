@@ -40,8 +40,17 @@ namespace Enquirio.Data {
                 , int? skip = null
                 , string[] includedNavProps = null) where T : class, IEntity;
 
-        bool Exists<T>(Expression<Func<T, bool>> filter = null) where T : class, IEntity;
-        Task<bool> ExistsAsync<T>(Expression<Func<T, bool>> filter = null) where T : class, IEntity;
+        Task<int> GetCountAsync<T>(Expression<Func<T, bool>> filter = null)
+            where T : class, IEntity;
+
+        int GetCount<T>(Expression<Func<T, bool>> filter = null)
+            where T : class, IEntity;
+
+        bool Exists<T>(Expression<Func<T, bool>> filter = null) 
+            where T : class, IEntity;
+
+        Task<bool> ExistsAsync<T>(Expression<Func<T, bool>> filter = null) 
+            where T : class, IEntity;
 
         void Delete<T>(T entity) where T : class, IEntity;
         void DeleteById<T>(object id) where T : class, IEntity;

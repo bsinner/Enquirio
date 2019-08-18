@@ -158,22 +158,54 @@ namespace Enquirio.Tests {
             });
         }
 
+        [Fact]
+        public void TestGetCountAsync() {
+            RunTest(asyncTest: async (repo, repo2) => {
+                Assert.Equal(9, await repo.GetCountAsync<Question>());
+                Assert.Equal(0, await 
+                    repo.GetCountAsync<Question>(q => q.Id == 99));
+                Assert.Equal(3, await 
+                    repo.GetCountAsync<Question>(q => q.Id >= 2 && q.Id <= 4));
+                Assert.Equal(99, await repo.GetCountAsync<Question>());
+                
+            });
+        }
+
+        [Fact]
+        public void TestGetCount() {
+            RunTest((repo, repo2) => {
+                Assert.Equal(4, repo.GetCount<Answer>());
+                Assert.Equal(0, 
+                    repo.GetCount<Answer>(q => q.Contents == "z"));
+                Assert.Equal(1, 
+                    repo.GetCount<Answer>(q => q.Id == 3));
+            });
+        }
+
         // Create test data and pass repositories to access it in callback
         private void RunTest(Action<RepositoryEnq, RepositoryEnq> test = null
                 , Func<RepositoryEnq, RepositoryEnq, Task> asyncTest = null) {
 
-            using (var factory = new TestContextFactory(_data)) {
-                using (DbContextEnq context = factory.GetContext()) {
+            using var factory = new TestContextFactory(_data);
+            using var context = factory.GetContext();
 
-                    // Two repositories are created so tests can ignore 
-                    // cached data and fetch from db
-                    RepositoryEnq repo = new RepositoryEnq(context);
-                    RepositoryEnq repo2 = new RepositoryEnq(context);
+            // Two repositories are created so tests can ignore 
+            // cached data from the first repo and fetch from db
+            RepositoryEnq repo = new RepositoryEnq(context);
+            RepositoryEnq repo2 = new RepositoryEnq(context);
 
-                    asyncTest?.Invoke(repo, repo2);
-                    test?.Invoke(repo, repo2);
-                }
-            }
+            asyncTest?.Invoke(repo, repo2);
+            test?.Invoke(repo, repo2);
+        }
+
+        private async Task RunTestAsync(Func<RepositoryEnq, RepositoryEnq, Task> test) {
+            using var factory = new TestContextFactory(_data);
+            using var context = factory.GetContext();
+
+            RepositoryEnq repo = new RepositoryEnq(context);
+            RepositoryEnq repo2 = new RepositoryEnq(context);
+
+            await test.Invoke(repo, repo2);
         }
     }
 }

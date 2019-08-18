@@ -138,6 +138,24 @@ namespace Enquirio.Data {
             return ContextGet(filter).AnyAsync();
         }
 
+        public Task<int> GetCountAsync<T>(Expression<Func<T, bool>> filter = null)
+                where T : class, IEntity {
+            var set = _context.Set<T>();
+
+            return filter == null 
+                    ? set.CountAsync()
+                    : set.CountAsync(filter);
+        }
+
+        public int GetCount<T>(Expression<Func<T, bool>> filter = null)
+                where T : class, IEntity {
+            var set = _context.Set<T>();
+
+            return filter == null
+                    ? set.Count()
+                    : set.Count(filter);
+        }
+
         // Used by add and update methods
         private void ContextAdd<T>(T entity) where T : class {
             _context.Set<T>().Add(entity);
