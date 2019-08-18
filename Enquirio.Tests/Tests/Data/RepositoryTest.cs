@@ -15,18 +15,22 @@ namespace Enquirio.Tests {
 
         [Fact]
         public void TestGetAll() {
-            RunTest(async (repo, repo2) => {
-                var results = repo.GetAll<Question>();
-                Assert.Equal(9, results.Count());
+            RunTest(repo => {
+                Assert.Equal(9, repo.GetAll<Question>().Count());
+            });
+        }
 
-                var resultsAsync = await repo2.GetAllAsync<Question>();
-                Assert.Equal(9, resultsAsync.Count());
+        [Fact]
+        public async Task TestGetAllAsync() {
+            await RunTestAsync(async repo => {
+                Assert.Equal(4
+                    , (await repo.GetAllAsync<Answer>()).Count());
             });
         }
 
         [Fact]
         public void TestCreateWithDateInit() {
-            RunTest((repo, repo2) => {
+            RunTest(testMulti: (repo, repo2) => {
                 Question q = new Question() { Title = "q", Contents = "..." };
                 Answer a = new Answer() { Title = "a", Contents = "..." };
                 q.Answers.Add(a);
@@ -45,7 +49,7 @@ namespace Enquirio.Tests {
         // between them is an optional filter param in GetAll and a mandatory filter in Get
         [Fact]
         public void TestGetFiltered() {
-            RunTest((repo, repo2) => {
+            RunTest(repo => {
 
                 var results = repo.GetAll<Question>(
                         q => q.Id < 5
@@ -63,8 +67,8 @@ namespace Enquirio.Tests {
         }
 
         [Fact]
-        public void TestGetFilteredAsync() {
-            RunTest(async (repo, repo2) => {
+        public async Task TestGetFilteredAsync() {
+            await RunTestAsync(async repo => {
 
                 var results = await repo.GetAsync<Answer>(
                         a => a.QuestionId == 1
@@ -82,7 +86,7 @@ namespace Enquirio.Tests {
 
         [Fact]
         public void TestGetById() {
-            RunTest((repo, repo2) => {
+            RunTest(repo => {
                 var result = 
                     repo.GetById<Answer>("1", navPropFks : new [] { "Question" });
 
@@ -92,8 +96,9 @@ namespace Enquirio.Tests {
         }
 
         [Fact]
-        public void TestGetByIdAsync() {
-            RunTest(async (repo, repo2) => {
+        public async Task TestGetByIdAsync() {
+            await RunTestAsync(async repo => {
+
                 var result = await repo.GetByIdAsync<Question>
                     (2, navPropCollections : new [] { "Answers" });
 
@@ -106,7 +111,7 @@ namespace Enquirio.Tests {
         // because DeleteById invokes Delete
         [Fact]
         public void TestDeleteById() {
-            RunTest((repo, repo2) => {
+            RunTest(testMulti: (repo, repo2) => {
                 repo.DeleteById<Question>(1);
                 repo.DeleteById<Question>("2");
                 repo.Save();
@@ -120,11 +125,11 @@ namespace Enquirio.Tests {
         }
 
         [Fact]
-        public void TestUpdateWithAutoDateChange() {
-            RunTest(asyncTest : async (repo, repo2) => {
+        public async Task TestUpdateWithAutoDateChange() {
+            await RunTestAsync(testMulti : async (repo, repo2) => {
                 var id = 2;
                 var newContents = "----";
-
+                
                 Question q = repo.GetById<Question>(id, navPropCollections : new [] { "Answers" });
                 Answer a = new Answer() { Title = "A5", Contents = "..." };
 
@@ -144,68 +149,67 @@ namespace Enquirio.Tests {
 
         [Fact]
         public void TestExists() {
-            RunTest((repo, repo2) => {
+            RunTest(repo => {
                 Assert.True(repo.Exists<Question>(e => e.Id == 1));
                 Assert.False(repo.Exists<Question>(e => e.Id == 999));
             });
         }
 
         [Fact]
-        public void TestExistsAsync() {
-            RunTest(asyncTest: async (repo, repo2) => {
+        public async Task TestExistsAsync() {
+            await RunTestAsync(async repo => {
                 Assert.True(await repo.ExistsAsync<Question>(e => e.Id == 1));
                 Assert.False(await repo.ExistsAsync<Question>(e => e.Id == 999));
             });
         }
 
         [Fact]
-        public void TestGetCountAsync() {
-            RunTest(asyncTest: async (repo, repo2) => {
+        public async Task TestGetCountAsync() {
+            await RunTestAsync(async repo => {
                 Assert.Equal(9, await repo.GetCountAsync<Question>());
+
                 Assert.Equal(0, await 
                     repo.GetCountAsync<Question>(q => q.Id == 99));
+
                 Assert.Equal(3, await 
                     repo.GetCountAsync<Question>(q => q.Id >= 2 && q.Id <= 4));
-                Assert.Equal(99, await repo.GetCountAsync<Question>());
-                
             });
         }
 
         [Fact]
         public void TestGetCount() {
-            RunTest((repo, repo2) => {
+            RunTest(repo => {
                 Assert.Equal(4, repo.GetCount<Answer>());
+
                 Assert.Equal(0, 
                     repo.GetCount<Answer>(q => q.Contents == "z"));
-                Assert.Equal(1, 
+
+                Assert.Equal(1,
                     repo.GetCount<Answer>(q => q.Id == 3));
             });
         }
 
         // Create test data and pass repositories to access it in callback
-        private void RunTest(Action<RepositoryEnq, RepositoryEnq> test = null
-                , Func<RepositoryEnq, RepositoryEnq, Task> asyncTest = null) {
-
+        private void RunTest(Action<RepositoryEnq> test = null
+                , Action<RepositoryEnq, RepositoryEnq> testMulti = null) {
             using var factory = new TestContextFactory(_data);
             using var context = factory.GetContext();
 
-            // Two repositories are created so tests can ignore 
-            // cached data from the first repo and fetch from db
-            RepositoryEnq repo = new RepositoryEnq(context);
-            RepositoryEnq repo2 = new RepositoryEnq(context);
-
-            asyncTest?.Invoke(repo, repo2);
-            test?.Invoke(repo, repo2);
+            var repo = new RepositoryEnq(context);
+            
+            test?.Invoke(repo);
+            testMulti?.Invoke(repo, new RepositoryEnq(context));
         }
 
-        private async Task RunTestAsync(Func<RepositoryEnq, RepositoryEnq, Task> test) {
+        private async Task RunTestAsync(Func<RepositoryEnq, Task> test = null
+                , Func<RepositoryEnq, RepositoryEnq, Task> testMulti = null) {
             using var factory = new TestContextFactory(_data);
-            using var context = factory.GetContext();
+            await using var context = factory.GetContext();
 
             RepositoryEnq repo = new RepositoryEnq(context);
-            RepositoryEnq repo2 = new RepositoryEnq(context);
 
-            await test.Invoke(repo, repo2);
+            await (test?.Invoke(repo) ?? Task.CompletedTask);
+            await (testMulti?.Invoke(repo, new RepositoryEnq(context)) ?? Task.CompletedTask);
         }
     }
 }
