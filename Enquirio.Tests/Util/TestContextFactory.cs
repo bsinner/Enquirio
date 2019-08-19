@@ -32,7 +32,7 @@ namespace Enquirio.Tests.Util {
                     // Add sample data if present
                     if (_sampleData != null) {
                         foreach (var command in _sampleData) {
-                            context.Database.ExecuteSqlCommand(command);
+                            context.Database.ExecuteSqlRaw(command);
                         }
                     }
                 }

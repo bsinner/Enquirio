@@ -157,11 +157,11 @@ namespace Enquirio.Data {
         }
 
         // Used by add and update methods
-        private void ContextAdd<T>(T entity) where T : class {
+        private void ContextAdd<T>(T entity) where T : class, IEntity {
             _context.Set<T>().Add(entity);
         }
 
-        private void ContextUpdate<T>(T entity) where T : class {
+        private void ContextUpdate<T>(T entity) where T : class, IEntity {
             _context.Update(entity);
         }
 
@@ -172,7 +172,7 @@ namespace Enquirio.Data {
                 , bool sortDesc = false
                 , int? take = null
                 , int? skip = null
-                , string[] includedNavProps = null) where T : class {
+                , string[] includedNavProps = null) where T : class, IEntity {
 
             IQueryable<T> query = _context.Set<T>();
 
@@ -181,13 +181,16 @@ namespace Enquirio.Data {
             }
 
             if (orderBy != null) {
-                query = sortDesc
-                    ? query.OrderByDescending(orderBy)
-                    : query.OrderBy(orderBy);
+                // TODO: A bug in EF Core 3.0 preview 8 causes OrderByDescending
+                // to throw an exception, uncomment or refactor when it's fixed
+                // bug: https://github.com/aspnet/EntityFrameworkCore/issues/17249
+                // query = sortDesc 
+                //         ? query.OrderByDescending(orderBy) 
+                //         : query.OrderBy(orderBy);
             }
 
             AddProps(includedNavProps
-                    ,p => query = query.Include(p));
+                    , p => query = query.Include(p));
 
             if (take != null) query = query.Take(take.Value);
             if (skip != null) query = query.Skip(skip.Value);
