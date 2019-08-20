@@ -20,5 +20,14 @@ namespace Enquirio.Tests.TestData {
 
         public static Answer InvalidTestAnswer
             = new Answer { Id = 10, Title = "", Contents = null, Created = DateTime.Now, QuestionId = 1 };
+
+        public static IEnumerable<Question> TestQuestions() {
+            for (int i = 0; i <= 40; i++) {
+                yield return new Question {
+                    Id = i, Title = $"Q{i}", Contents = "..."
+                    , Created = DateTime.Now, Answers = new List<Answer>()
+                };
+            }
+        }
     }
 }
