@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Enquirio.Controllers;
 using Enquirio.Data;
@@ -21,15 +22,19 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task TestGetQuestionsPageOne() {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
-            mockRepo.Setup(repo => repo.GetAllAsync<Question>
-                (null, null, true, PageLength, null, null))
-                .ReturnsAsync
-                (QuestionData.TestQuestions().ToList().GetRange(0, 10));
+            mockRepo.Setup(repo => repo.GetAllAsync<Question>(
+                    null, It.IsAny<Expression<Func<Question, IComparable>>>()
+                    , It.IsAny<bool>(), PageLength, null, null)
+                ).ReturnsAsync(
+                    QuestionData.TestQuestions().ToList().GetRange(0, PageLength)
+                );
 
             var controller = new QuestionApiController(mockRepo.Object);
 
             // Act 
-            var result = await controller.GetQuestions();
+            var result = await controller.GetQuestions(1);
+            await controller.GetQuestions(0);
+            await controller.GetQuestions(-1);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -37,8 +42,10 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.Equal(PageLength
                 , (result.Value as List<Question>).Count);
 
-            mockRepo.Verify(repo => repo.GetAllAsync<Question>
-                (null, null, true, PageLength, null, null), Times.Once);
+            mockRepo.Verify(repo => repo.GetAllAsync<Question>(
+                    null, It.IsAny<Expression<Func<Question, IComparable>>>()
+                    , It.IsAny<bool>(), PageLength, null, null), Times.Exactly(3)
+                );
             mockRepo.VerifyNoOtherCalls();
         }
 

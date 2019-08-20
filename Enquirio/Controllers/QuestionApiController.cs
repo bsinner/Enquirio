@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Enquirio.Data;
 using Enquirio.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +11,21 @@ namespace Enquirio.Controllers {
     public class QuestionApiController : Controller {
 
         private readonly IRepositoryEnq _repo;
+        public const int PageLength = 15;
 
         public QuestionApiController(IRepositoryEnq repo) => _repo = repo;
+
+        [HttpGet("questions")]
+        [Produces("application/json")]
+        public async Task<OkObjectResult> GetQuestions(int p) {
+            if (p <= 1) {
+                return Ok(
+                    await _repo.GetAllAsync<Question>(take: PageLength)
+                );
+            }
+
+            return Ok(p);
+        }
 
         [HttpPost("createAnswer")]
         [Consumes("application/json")]
