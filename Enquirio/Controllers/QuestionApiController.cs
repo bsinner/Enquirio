@@ -19,12 +19,14 @@ namespace Enquirio.Controllers {
         [Produces("application/json")]
         public async Task<OkObjectResult> GetQuestions(int p) {
             if (p <= 1) {
-                return Ok(
-                    await _repo.GetAllAsync<Question>(take: PageLength)
-                );
+                // Pass 1 instead of p in case the page is 0 or negative
+                return Ok(await GetPage(1));
             }
 
-            return Ok(p);
+            var maxPage = (int) Math.Floor(
+                await _repo.GetCountAsync<Question>() / (double) PageLength);
+
+            return Ok(await GetPage(p > maxPage ? maxPage : p));
         }
 
         [HttpPost("createAnswer")]
@@ -120,6 +122,13 @@ namespace Enquirio.Controllers {
 
             return notFound;
         }
-        
+
+        // Get one page of questions
+        private async Task<List<Question>> GetPage(int page) {
+            return await _repo.GetAllAsync<Question>(
+                orderBy: q => q.Created, sortDesc: true
+                , take: PageLength, skip: PageLength * page - PageLength
+            );
+        }
     }
 }
