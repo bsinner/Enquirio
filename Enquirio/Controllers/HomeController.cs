@@ -14,7 +14,7 @@ namespace Enquirio.Controllers {
         public HomeController(IWebHostEnvironment env) => _env = env;
 
         public IActionResult Index() {
-            if (!_env.IsDevelopment()) {
+            if (_env.IsDevelopment()) {
                 return File("~/devenv.html", "text/html");
             }
 
