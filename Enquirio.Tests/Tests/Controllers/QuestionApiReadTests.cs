@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -52,7 +51,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
             var questions = QuestionData.TestQuestions().ToList();
-            var maxPage = (int)Math.Floor(questions.Count / (double)PageLength);
+            var maxPage = (int)Math.Ceiling(questions.Count / (double)PageLength);
             var midPage = 2;
             var midSkip = midPage * PageLength - PageLength;
             var maxSkip = maxPage * PageLength - PageLength;

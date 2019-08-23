@@ -23,7 +23,7 @@ namespace Enquirio.Controllers {
                 return Ok(await GetPage(1));
             }
 
-            var maxPage = (int) Math.Floor(
+            var maxPage = (int) Math.Ceiling(
                 await _repo.GetCountAsync<Question>() / (double) PageLength);
 
             return Ok(await GetPage(p > maxPage ? maxPage : p));
