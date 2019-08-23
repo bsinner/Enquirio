@@ -126,9 +126,7 @@ namespace Enquirio.Controllers {
         // Get one page of questions
         private async Task<List<Question>> GetPage(int page) {
             return await _repo.GetAllAsync<Question>(
-                orderBy: q => q.Created, sortDesc: true
-                , take: PageLength, skip: PageLength * page - PageLength
-            );
+                orderBy: q => q.Created, sortDesc: true, skip: PageLength * page - PageLength, take: PageLength);
         }
     }
 }

@@ -54,8 +54,8 @@ namespace Enquirio.Tests {
                 var results = repo.GetAll<Question>(
                         q => q.Id < 5
                         , q => q.Id, true
-                        , skip : 1
-                        , includedNavProps : new[] { "Answers" });
+                        , skip: 1
+                        , includedNavProps: new[] { "Answers" });
 
                 int last = results.Count - 1;
 
@@ -72,10 +72,8 @@ namespace Enquirio.Tests {
 
                 var results = await repo.GetAsync<Answer>(
                         a => a.QuestionId == 1
-                        , a => a.Title
-                        , take : 3
-                        , skip : 1
-                        , includedNavProps : new[] { "Question" });
+                        , a => a.Title, skip: 1
+                        , take: 3, includedNavProps: new[] { "Question" });
 
                 Assert.Equal(2, results.Count);
                 // Assert ascending order

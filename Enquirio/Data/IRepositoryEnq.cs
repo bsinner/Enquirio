@@ -16,29 +16,29 @@ namespace Enquirio.Data {
                 , string[] navPropFks = null) where T : class, IEntity;
 
         List<T> Get<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity;
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity;
         List<T> GetAll<T>(Expression<Func<T, bool>> filter = null
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity;
-        Task<List<T>> GetAsync<T>(Expression<Func<T, bool>> filter 
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity;
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity;
+        Task<List<T>> GetAsync<T>(Expression<Func<T, bool>> filter
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity;
         Task<List<T>> GetAllAsync<T>(Expression<Func<T, bool>> filter = null
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity;
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity;
 
         Task<int> GetCountAsync<T>(Expression<Func<T, bool>> filter = null)
             where T : class, IEntity;

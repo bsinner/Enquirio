@@ -51,47 +51,47 @@ namespace Enquirio.Data {
         // If ordering by multiple properties, order results in the calling class,
         // or create a repository that extends this repo
         public List<T> Get<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity {
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity {
 
             return ContextGet<T>
-                (filter, orderBy, sortDesc, take, skip, includedNavProps).ToList();
+                (filter, orderBy, sortDesc, skip, take, includedNavProps).ToList();
         }
 
         public List<T> GetAll<T>(Expression<Func<T, bool>> filter = null
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity {
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity {
 
             return ContextGet<T>
-                (filter, orderBy, sortDesc, take, skip, includedNavProps).ToList();
+                (filter, orderBy, sortDesc, skip, take, includedNavProps).ToList();
         }
 
         public Task<List<T>> GetAsync<T>(Expression<Func<T, bool>> filter
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity {
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity {
 
             return ContextGet
-                (filter, orderBy, sortDesc, take, skip, includedNavProps).ToListAsync();
+                (filter, orderBy, sortDesc, skip, take, includedNavProps).ToListAsync();
         }
 
         public Task<List<T>> GetAllAsync<T>(Expression<Func<T, bool>> filter = null
             , Expression<Func<T, IComparable>> orderBy = null
             , bool sortDesc = false
-            , int? take = null
             , int? skip = null
+            , int? take = null
             , string[] includedNavProps = null) where T : class, IEntity {
 
             return ContextGet<T>
-                (filter, orderBy, sortDesc, take, skip, includedNavProps).ToListAsync();
+                (filter, orderBy, sortDesc, skip, take, includedNavProps).ToListAsync();
         }
 
         public T GetById<T>(object id
@@ -166,13 +166,12 @@ namespace Enquirio.Data {
         }
 
         // Used by get methods, all properties are optional
-        private IQueryable<T> ContextGet<T>(
-                Expression<Func<T, bool>> filter = null
-                , Expression<Func<T, IComparable>> orderBy = null
-                , bool sortDesc = false
-                , int? take = null
-                , int? skip = null
-                , string[] includedNavProps = null) where T : class, IEntity {
+        private IQueryable<T> ContextGet<T>(Expression<Func<T, bool>> filter = null
+            , Expression<Func<T, IComparable>> orderBy = null
+            , bool sortDesc = false
+            , int? skip = null
+            , int? take = null
+            , string[] includedNavProps = null) where T : class, IEntity {
 
             IQueryable<T> query = _context.Set<T>();
 
@@ -192,8 +191,8 @@ namespace Enquirio.Data {
             AddProps(includedNavProps
                     , p => query = query.Include(p));
 
-            if (take != null) query = query.Take(take.Value);
             if (skip != null) query = query.Skip(skip.Value);
+            if (take != null) query = query.Take(take.Value);
 
             return query;
         }
