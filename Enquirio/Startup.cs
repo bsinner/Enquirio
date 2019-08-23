@@ -1,26 +1,26 @@
 ﻿using Enquirio.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using VueCliMiddleware;
 
 namespace Enquirio {
     public class Startup {
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
-        public Startup(IConfiguration configuration) {
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment) {
+            Environment = environment;
             Configuration = configuration;
         }
 
-        // Set up services
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers();
-
-            // Add DB
+            services.AddRouting();
+            services.AddRazorPages();
+            
             services.AddDbContext<DbContextEnq>(options => {
                 options.UseSqlServer(
                     Configuration["ConnectionStrings:DefaultConnection"]
@@ -28,27 +28,17 @@ namespace Enquirio {
             });
 
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
-
+            services.AddSingleton(Environment);
         }
 
-        // Middleware
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseEndpoints(endpoints => {
-                endpoints.MapControllers();
-
-                #if DEBUG
-                    if (System.Diagnostics.Debugger.IsAttached) {
-                        endpoints.MapToVueCliProxy("{*path}"
-                            , new SpaOptions {SourcePath = "frontend"}
-                            , "serve", regex: "Compiled successfully");
-                    }
-                #endif
-
-                endpoints.MapFallbackToFile("index.html");
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
             });
+
         }
     }
 }

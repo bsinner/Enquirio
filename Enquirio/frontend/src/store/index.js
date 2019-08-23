@@ -13,8 +13,8 @@ export default new Vuex.Store({
     },
     mutations : {
         setPosts(state, posts, page) {
-            state.currentPosts = data.posts;
-            state.pageNumber = data.page;
+            state.currentPosts = posts;
+            state.pageNumber = page;
         }
     },
     actions : {

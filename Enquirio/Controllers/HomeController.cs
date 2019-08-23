@@ -1,22 +1,24 @@
 ﻿using System.Threading.Tasks;
 using Enquirio.Data;
 using Enquirio.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace Enquirio.Controllers {
 
     public class HomeController : Controller {
 
-        private readonly IRepositoryEnq _repo;
+        private readonly IWebHostEnvironment _env;
 
-        public HomeController(IRepositoryEnq repo) {
-            _repo = repo;
-        }
+        public HomeController(IWebHostEnvironment env) => _env = env;
 
-        public async Task<IActionResult> Index() {
-            var questions = await _repo.GetAllAsync<Question>();
+        public IActionResult Index() {
+            if (!_env.IsDevelopment()) {
+                return File("~/devenv.html", "text/html");
+            }
 
-            return View(questions);
+            return File("~/index.html", "text/html");
         }
 
     }

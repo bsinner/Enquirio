@@ -5,6 +5,12 @@ Enquirio/wwwroot/lib/
 Enquirio/Migrations/
 *node_modules/
 Enquirio/wwwroot/dist/
+Enquirio/wwwroot/css/
+Enquirio/wwwroot/js/
+Enquirio/wwwroot/index.html
+
+# May unignore later
+*PublishProfiles/
 
 # User-specific files
 *.rsuser
