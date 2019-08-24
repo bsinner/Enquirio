@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Enquirio.Data;
 
 namespace Enquirio.Models {
@@ -16,6 +17,7 @@ namespace Enquirio.Models {
         public DateTime Created { get; set; }
         public DateTime? Edited { get; set; }
 
+        [JsonIgnore]
         public virtual Question Question { get; set; }
     }
 }

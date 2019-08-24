@@ -28,11 +28,25 @@ namespace Enquirio.Controllers {
             return Ok(await GetPage(p > maxPage ? maxPage : p));
         }
 
+        [HttpGet("question/{id}")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetQuestion(int id) {
+            if (id >= 1) {
+                var question = await _repo
+                    .GetByIdAsync<Question>(id, new[] {"Answers"});
+
+                if (question != null) {
+                    return Ok(question);
+                }
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("qMaxPage")]
         public async Task<OkObjectResult> GetMaxPage() 
             => Ok(await MaxPage());
         
-
         [HttpPost("createAnswer")]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateAnswer([FromBody] Answer answer) {
