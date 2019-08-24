@@ -15,6 +15,7 @@
                             &nbsp;&nbsp;&nbsp;Username - {{ q.created }}
                         </i>
                     </p>
+                    <hr>
 
             </div>
         </div>
@@ -29,9 +30,9 @@ export default {
         questions: s => s.questions, 
         pageNumber: s => s.pageNumber
     }) },
-    methods: { ...mapActions("home", [ "getPosts" ]) },
+    methods: { ...mapActions("home", [ "getQuestions" ]) },
     created() {
-        this.getPosts(this.pageNumber);
+        this.getQuestions(this.pageNumber);
     }
 }
 </script>
