@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Enquirio {
     public class Startup {
@@ -19,8 +20,11 @@ namespace Enquirio {
         public void ConfigureServices(IServiceCollection services) {
             services.AddControllers();
             services.AddRouting();
-            services.AddRazorPages();
-            
+
+            if (Environment.IsDevelopment()) {
+                services.AddCors();
+            }
+
             services.AddDbContext<DbContextEnq>(options => {
                 options.UseSqlServer(
                     Configuration["ConnectionStrings:DefaultConnection"]
@@ -35,10 +39,13 @@ namespace Enquirio {
             app.UseStaticFiles();
             app.UseRouting();
 
+            if (env.IsDevelopment()) {
+                app.UseCors(c => c.WithOrigins(Configuration["VueCliUrl"]));
+            }
+
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
             });
-
         }
     }
 }
