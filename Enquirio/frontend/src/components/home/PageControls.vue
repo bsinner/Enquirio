@@ -15,7 +15,7 @@
     </div>
 </template>
 
-<script>
+<script> 
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -26,10 +26,10 @@ export default {
         }),
         pageArray() { 
             return [...Array(this.pages + 1).keys()].splice(1); 
-        }
+        },
     },
     methods: { 
-        ...mapActions("home", [ "getPages", "getQuestions" ]) 
+        ...mapActions("home", [ "getPages", "getQuestions" ])
     },
     created() {
         this.getPages();

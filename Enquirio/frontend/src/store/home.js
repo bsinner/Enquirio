@@ -8,19 +8,19 @@ export default {
         questions: []
     },
     mutations: {
-        setQuestions(state, questions, page) {
-            state.questions = questions;
-            state.pageNumber = page;
+        setQuestions(state, data) {
+            state.questions = data.questions;
+            state.pageNumber = data.page;
         },
         setPages(state, pages) {
             state.pages = pages;
         }
     },
     actions: {
-        async getQuestions({ commit, rootState }, page) {
-            const url = `${rootState.url}/questions?p=${page}`;
+        async getQuestions({ commit, rootState }, pageNumber) {
+            const url = `${rootState.url}/questions?p=${pageNumber}`;
             let data = (await Axios.get(url)).data;
-            commit("setQuestions", data, page)
+            commit("setQuestions", { questions: data, page: pageNumber });
         },
 
         async getPages({ commit, rootState }) {
