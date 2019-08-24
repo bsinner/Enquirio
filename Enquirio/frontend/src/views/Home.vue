@@ -12,17 +12,18 @@
 
                 <question-list></question-list>
                 
-                <!-- <page-controls></page-controls> -->            
+                <page-controls></page-controls>            
             </div>
         </div>
     </div>
 </template>
 
-<script>
-    import SearchBar from "../components/home/SearchBar";    
+<script>    
+    import SearchBar    from "../components/home/SearchBar";
     import QuestionList from "../components/home/QuestionList";
+    import PageControls from "../components/home/PageControls";
 
     export default {
-        components: { SearchBar, QuestionList },        
+        components: { SearchBar, QuestionList, PageControls },        
     }
 </script>
