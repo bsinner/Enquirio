@@ -23,11 +23,15 @@ namespace Enquirio.Controllers {
                 return Ok(await GetPage(1));
             }
 
-            var maxPage = (int) Math.Ceiling(
-                await _repo.GetCountAsync<Question>() / (double) PageLength);
+            var maxPage = await MaxPage();
 
             return Ok(await GetPage(p > maxPage ? maxPage : p));
         }
+
+        [HttpGet("qMaxPage")]
+        public async Task<OkObjectResult> GetMaxPage() 
+            => Ok(await MaxPage());
+        
 
         [HttpPost("createAnswer")]
         [Consumes("application/json")]
@@ -128,5 +132,10 @@ namespace Enquirio.Controllers {
             return await _repo.GetAllAsync<Question>(
                 orderBy: q => q.Created, sortDesc: true, skip: PageLength * page - PageLength, take: PageLength);
         }
+
+        // Get number of last page of questions
+        private async Task<int> MaxPage() => (int) Math.Ceiling(
+            await _repo.GetCountAsync<Question>() / (double) PageLength
+        );
     }
 }

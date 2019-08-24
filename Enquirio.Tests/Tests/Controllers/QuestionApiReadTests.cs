@@ -22,7 +22,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
             mockRepo.Setup(repo => repo.GetAllAsync<Question>(
-                    null, desc(), true, 0, PageLength, null)
+                    null, Desc(), true, 0, PageLength, null)
             ).ReturnsAsync(
                     QuestionData.TestQuestions().ToList().GetRange(0, PageLength)
             );
@@ -40,7 +40,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.Equal(PageLength, (result.Value as List<Question>).Count);
 
             mockRepo.Verify(repo => repo.GetAllAsync<Question>(
-                    null, desc()
+                    null, Desc()
                     , true, 0, PageLength, null), Times.Exactly(3)
             );
             mockRepo.VerifyNoOtherCalls();
@@ -51,7 +51,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
             var questions = QuestionData.TestQuestions().ToList();
-            var maxPage = (int)Math.Ceiling(questions.Count / (double)PageLength);
+            var maxPage = MaxPage(questions.Count);
             var midPage = 2;
             var midSkip = midPage * PageLength - PageLength;
             var maxSkip = maxPage * PageLength - PageLength;
@@ -68,7 +68,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.Equal(PageLength, (result.Value as List<Question>).Count);
 
             mockRepo.Verify(repo => repo.GetAllAsync(
-                    null, desc(), true, It.IsIn(new [] { midSkip, maxSkip }), PageLength, null)
+                    null, Desc(), true, It.IsIn(new [] { midSkip, maxSkip }), PageLength, null)
                     , Times.Exactly(2));
             mockRepo.Verify(repo => repo.GetCountAsync<Question>(null)
                     , Times.Exactly(2));
@@ -79,10 +79,11 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task TestGetCount() {
             // Arrange
             var mockRepo = new Mock<IRepositoryEnq>();
-            int lng = 10;
+            int count = 100;
+            int maxPage = MaxPage(count);
 
             mockRepo.Setup(repo => repo.GetCountAsync<Question>(null))
-                .ReturnsAsync(lng);
+                .ReturnsAsync(count);
 
             var controller = new QuestionApiController(mockRepo.Object);
 
@@ -91,7 +92,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             // Assert 
             Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(lng, result.Value as int?);
+            Assert.Equal(maxPage, result.Value as int?);
 
             mockRepo.Verify(repo => repo.GetCountAsync<Question>(null), Times.Once);
             mockRepo.VerifyNoOtherCalls();
@@ -101,21 +102,23 @@ namespace Enquirio.Tests.Tests.Controllers {
         public void HttpVerbTests() {
             Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestions)
                     , typeof(HttpGetAttribute)));
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetMaxPage())
+            Assert.True(HasAttribute(nameof(QuestionApiController.GetMaxPage)
                     , typeof(HttpGetAttribute)));
         }
 
-        private Expression<Func<Question, IComparable>> desc() {
-            return It.IsAny<Expression<Func<Question, IComparable>>>();
-        }
+        private Expression<Func<Question, IComparable>> Desc() 
+            => It.IsAny<Expression<Func<Question, IComparable>>>();
+
+        private int MaxPage(int items) 
+            => (int) Math.Ceiling(items / (double) PageLength);
 
         private void SetUpPastOneRepo(Mock<IRepositoryEnq> repo, int midSkip
                 , int maxSkip, List<Question> questions) {
 
-            repo.Setup(r => r.GetAllAsync(null, desc(), true, midSkip, PageLength, null))
+            repo.Setup(r => r.GetAllAsync(null, Desc(), true, midSkip, PageLength, null))
                 .ReturnsAsync(questions.GetRange(midSkip, PageLength));
 
-            repo.Setup(r => r.GetAllAsync(null, desc(), true, maxSkip, PageLength, null))
+            repo.Setup(r => r.GetAllAsync(null, Desc(), true, maxSkip, PageLength, null))
                 .ReturnsAsync(new List<Question>());
 
             repo.Setup(r => r.GetCountAsync<Question>(null))
