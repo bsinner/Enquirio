@@ -1,8 +1,9 @@
+import Axios from "axios";
+
 export default {
     namespaced: true,
     state: {
         pageNumber: 1,
-        pageSize: 15,
         questions: []
     },
     mutations: {
@@ -12,10 +13,10 @@ export default {
         }
     },
     actions: {
-        async getPosts({ commit, state, rootState }, page) {
-            const url = `${rootState.url}/questions?p${page}`;
+        async getPosts({ commit, rootState }, page) {
+            const url = `${rootState.url}/questions?p=${page}`;
             let data = (await Axios.get(url)).data;
-            commit("setPosts", data, page)
+            commit("setQuestions", data, page)
         }
     }
 }

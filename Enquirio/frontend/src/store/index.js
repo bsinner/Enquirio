@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Axios from "axios";
 import home from "./home";
 
 const IS_PROD = process.env.NODE_ENV === "production";
