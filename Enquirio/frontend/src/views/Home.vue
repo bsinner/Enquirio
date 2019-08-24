@@ -12,7 +12,10 @@
 
                 <question-list></question-list>
                 
-                <page-controls></page-controls>            
+                <br>
+                <page-controls></page-controls>
+                <br>
+
             </div>
         </div>
     </div>
