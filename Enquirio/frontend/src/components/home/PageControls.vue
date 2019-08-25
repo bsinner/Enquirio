@@ -48,11 +48,13 @@ import { mapState, mapActions } from "vuex";
 const MAX_BTNS = 10;
 const SHIFT_LG = 9;
 const SHIFT_SM = 2;
-const START_LG = 16;
+const START_LG = 21;
 
 export default {    
     data() {
-        return { btnArray: [1] };
+        return { 
+            btnArray: [1] // A list of numbers to print on pagination buttons
+        };
     },
     computed: { 
         ...mapState("home", { 
@@ -62,50 +64,74 @@ export default {
     },
     methods: { 
         ...mapActions("home", [ "getPages", "getQuestions" ]),
-        // Get the previous or next page of questions
+        // Get a page of questions
         toPage(p) {    
 
-            // if page is valid continue
+            // if page isn't greater than total number of pages continue
             if (p <= this.pages) {
                 const lng = this.btnArray.length - 1;
                 
-                // if requested page number is not one of the numbered 
-                // buttons on screen update the list of buttons
+                // if requested page number is not on the screen update the controls
                 if (p >= this.btnArray[lng]) {
-                
+                    
+                    // Update to show going forward
                     if (this.pages < START_LG) { 
                         this.shiftPageButtons(SHIFT_SM, p);
                     } else {
                         this.shiftPageButtons(SHIFT_LG, p);
                     }
+                } else if (p <= this.btnArray[0] && p > 1) {
+                    
+                    // Update to show going back
+                    if (this.pages < START_LG) {
+                        this.shiftPageButtons(-SHIFT_SM, p);
+                    } else {
+                        this.shiftPageButtons(-SHIFT_LG, p);
+                    }
                 }
-                
+                                
                 this.getQuestions(p);
             }
         },
-        // Update the page buttons if the last or first button was clicked
-        shiftPageButtons(dist, requestedPage) {
         
-            // Go forward
-            if (dist > 0) {
-                const remainingPages = this.pages - requestedPage;
-                const lng = () => this.btnArray.length;
+        // Show more page buttons if the first or last button was clicked
+        shiftPageButtons(dist, requestedPage) {                        
+            // Boolean to represent going backwards or forwards
+            const isNeg = dist < 0;
+            dist = Math.abs(dist);
+            
+            // Pages left between start/end of btnArray and total pages
+            const remainingPages = isNeg 
+                    ? this.btnArray[0] - 1
+                    : this.pages - requestedPage;
 
-                if (dist > remainingPages) {                    
-                    dist = remainingPages;
-                }
-                
-                for (let i = 0; i < dist; i++) {                
-                    const last = this.btnArray[lng() - 1];            
-                    this.btnArray.push(last + 1);                    
-                }
+            // Shorthand for .length
+            const lng = () => this.btnArray.length;
 
-                this.btnArray = this.btnArray.splice(lng() - MAX_BTNS, lng());
-                
-            // Go backwards                
-            } else {
-                
+            // if trying to go more pages than there are left 
+            // change distance to amount of remaing pages
+            if (dist > remainingPages) {                    
+                dist = remainingPages;
             }
+            
+            // Append new buttons
+            for (let i = 0; i < dist; i++) {
+                // Last/first element in btnArray
+                const borderElement = isNeg 
+                        ? this.btnArray[0]
+                        : this.btnArray[lng() - 1];
+                
+                if (isNeg) {
+                    this.btnArray.splice(0, 0, borderElement - 1);
+                } else {
+                    this.btnArray.push(borderElement + 1);
+                }                
+            }
+            
+            // Trim old buttons
+            this.btnArray = isNeg 
+                    ? this.btnArray.splice(0, MAX_BTNS)
+                    : this.btnArray.splice(lng() - MAX_BTNS, lng());                                                
         }
     },
     created() {        
