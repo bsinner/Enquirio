@@ -5,24 +5,14 @@
         <div class="row">
             <div class="col-sm-9">
                 
-                <div class="row justify-content-center">
-                    <!-- <div class="col-sm-8">
-                        <h4>{{ question.title }}</h4>
-                        <p>{{ question.contents }}</p>
-
-                        <br>
-                        <i>Asked by Author on {{ question.created }}</i>
-
-                        <br><br>
-                        <button-group>
-
-                        </button-group>
-
-                    </div> -->
-                    <question-contents :question="question">
-                    </question-contents>
-
+                <div class="row justify-content-center">                    
+                    <question-content :question="question">
+                    </question-content>
                 </div>
+
+                <answer-content v-for="(a, i) in question.answers"
+                        v-bind:key="i" :answer="a">                    
+                </answer-content>
 
             </div>
         </div>
@@ -32,10 +22,11 @@
 
 <script>
 import { mapActions, mapState } from "vuex"
-import QuestionContents from "../components/question/QuestionContents";
+import QuestionContent from "../components/question/QuestionContent";
+import AnswerContent from "../components/question/AnswerContent";
 
 export default {
-    components: { QuestionContents },
+    components: { QuestionContent, AnswerContent },
     computed: { 
         ...mapState("question", { question: s => s.question }) 
     },

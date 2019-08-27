@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import TextPostButtons from "./TextPostButtons";
+import TextPostButtons from "./_shared/TextPostButtons";
 
 export default {
     props: [ "question" ],
