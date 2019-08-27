@@ -67,8 +67,7 @@ export default {
         detectEdge(p) {
             const lng = this.btnArray.length - 1;
 
-            if (p <= this.btnArray[0] || p >= this.btnArray[lng]) {
-                console.log(this.btnArray);
+            if (p <= this.btnArray[0] || p >= this.btnArray[lng]) {                
                 this.showMoreButtons(p);
             }            
         },
@@ -101,7 +100,7 @@ export default {
     },
     created() {        
         this.getPages();    
-        this.btnArray = [...Array(this.pages + 1).keys()]
+        this.btnArray = [ ...Array(this.pages + 1).keys() ]
                 .splice(1, MAX_BTNS);
     }
 }
