@@ -49,7 +49,8 @@
 
   <ItemGroup>
     <Folder Include="frontend\src\assets\" />
-    <Folder Include="frontend\src\components\Home\" />
+    <Folder Include="frontend\src\components\Home\PageControls\" />
+    <Folder Include="frontend\src\components\_shared\" />
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="wwwroot\css\" />
   </ItemGroup>

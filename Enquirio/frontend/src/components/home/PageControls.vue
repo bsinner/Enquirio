@@ -1,21 +1,22 @@
 <template>
     <div v-if="pages > 1" class="row justify-content-center">
         <span class="btn-group btn-group-toggle" data-toggle="buttons">
-                    
+
+            <!-- Left arrow buttons -->
             <arrow-button :direction="'left'" :count="2" 
                     v-if="showLeft" v-on:toPage="toPage(1)">                
             </arrow-button>
             <arrow-button :direction="'left'" :count="1"
                     v-if="showLeft" v-on:toPage="toPage(page - 1)">
             </arrow-button>
-                        
-            <label v-for="(p, i) in btnArray"
-                    :key="i" class="btn btn-secondary"
-                    :class="{ active : p === page }">
-                <input type="radio" autocomplete="off"
-                        @click="toPage(p)">{{ p }}
-            </label>
-            
+
+            <!-- Numeric buttons -->
+            <page-button v-for="(p, i) in btnArray" v-on:toPage="toPage(p)"
+                    :key="i" :class="{ active : p === page }">
+                {{ p }}
+            </page-button>
+
+            <!-- Right arrow buttons -->
             <arrow-button :direction="'right'" :count="1"
                     v-if="showRight" v-on:toPage="toPage(page + 1)">
             </arrow-button>
@@ -30,12 +31,13 @@
 <script> 
 import { mapState, mapActions } from "vuex";
 import ArrowButton from "./PageControls/ArrowButton";
+import PageButton from "./PageControls/PageButton";
 
 const MAX_BTNS = 10;
 const SHIFT = 5;
 
 export default {
-    components: { ArrowButton },
+    components: { ArrowButton, PageButton },
     data() {
         return { 
             btnArray: [1] // A list of numbers to print on pagination buttons
@@ -61,7 +63,7 @@ export default {
             }
         },
         
-        // Load more page buttons if the first or last button was clicked
+        // Detect if the first or last numbered page button on the screen was clicked
         detectEdge(p) {
             const lng = this.btnArray.length - 1;
 
@@ -71,7 +73,7 @@ export default {
             }            
         },
 
-        // Add more page buttons to the beginning or end of the list of page numbers
+        // Add more page buttons to the beginning or end of the list of page buttons
         showMoreButtons(requestedPage) {                                                     
             let change = requestedPage - this.page;
             const lng = this.btnArray.length - 1;    
@@ -90,6 +92,7 @@ export default {
             this.renumberButtons(change);
         }, 
 
+        // Renumber the page buttons to show more numbers in the direction the user clicked
         renumberButtons(change) {
             this.btnArray.forEach((btn, index) => {
                 this.btnArray.splice(index, 1, btn + change);

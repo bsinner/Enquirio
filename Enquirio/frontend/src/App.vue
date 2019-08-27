@@ -12,7 +12,7 @@
 </style>
 
 <script>
-    import MenuBar from "./components/MenuBar";
+    import MenuBar from "./components/_shared/MenuBar";
 
     export default {
         components: { MenuBar }
