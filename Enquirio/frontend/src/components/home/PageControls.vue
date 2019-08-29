@@ -98,9 +98,9 @@ export default {
             });
         }
     },
-    created() {        
-        this.getPages();    
-        this.btnArray = [ ...Array(this.pages + 1).keys() ]
+    async created() {        
+        await this.getPages();    
+        this.btnArray = [...Array(this.pages + 1).keys()]
                 .splice(1, MAX_BTNS);
     }
 }

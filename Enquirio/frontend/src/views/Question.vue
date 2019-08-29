@@ -12,7 +12,7 @@
 
                 <answer-content v-for="(a, i) in question.answers"
                         v-bind:key="i" :answer="a">                    
-                </answer-content>
+                </answer-content>            
 
             </div>
         </div>
@@ -33,8 +33,8 @@ export default {
     methods: {
         ...mapActions("question", { getQuestion: "getQuestion" })
     },
-    created() {
-        this.getQuestion(this.$route.params.id);
+    async created() {
+        await this.getQuestion(this.$route.params.id);
     }
 }
 </script>

@@ -31,8 +31,8 @@ export default {
         pageNumber: s => s.pageNumber
     }) },
     methods: { ...mapActions("home", [ "getQuestions" ]) },
-    created() {
-        this.getQuestions(this.pageNumber);
+    async created() {
+        await this.getQuestions(this.pageNumber);
     }
 }
 </script>
