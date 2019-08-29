@@ -3,16 +3,25 @@
         <div class="col-sm-8">
             <hr>
 
-            <h4>{{ answer.title }}</h4>
-            <p>{{ answer.contents }}</p>
+            <div v-if="showAnswer">
+                <h4>{{ answer.title }}</h4>
+                <p>{{ answer.contents }}</p>
+            </div>
+
+            <text-post-form v-if="!showAnswer"
+                    v-on:hideForm="hideEdit">
+            </text-post-form>
 
             <br>
             <i class="text-secondary">
-                &nbsp;&nbsp;Answered by Author on {{ answer.created }}            
+                Answered by Author on {{ answer.created }}            
             </i>
 
-            <br><br>
-            <text-post-buttons></text-post-buttons>
+            <div v-if="showAnswer">
+                <br><br>
+                <text-post-buttons v-on:showEdit="showEdit">                     
+                </text-post-buttons>
+            </div>
 
         </div>
     </div>
@@ -20,9 +29,23 @@
 
 <script>
 import TextPostButtons from "./_shared/TextPostButtons";
+import TextPostForm from "./_shared/TextPostForm";
 
 export default {
     props: [ "answer" ],
-    components: { TextPostButtons }
+    components: { TextPostButtons, TextPostForm },
+    data() {
+        return {
+            showAnswer: true,            
+        }
+    },
+    methods: {
+        showEdit() {
+            this.showAnswer = false;            
+        },
+        hideEdit() {
+            this.showAnswer = true;            
+        },
+    }
 }
 </script>
