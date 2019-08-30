@@ -11,9 +11,9 @@ export default {
             state.question = question;
         },
         // Set 1 answer's title and contents
-        setAnswer(state, { newTitle, newContents }) {
-            // state.question.answers[0].title = newTitle;
-            // state.question.answers[0].contents = newContents;
+        setAnswer(state, { id, newTitle, newContents }) {
+            state.question.answers[id].title = newTitle;
+            state.question.answers[id].contents = newContents;
         }
     },
     actions: {
@@ -25,15 +25,14 @@ export default {
             commit("setQuestion", data);
         },
         async editAnswer({ commit, state, rootState }, { answer, title, contents }) {
-
             commit("setAnswer", {
-                // i: state.question.answers.indexOf(answer),
+                id: answer.id,
                 newTitle: title,
                 newContents: contents
             });
 
-            // const url = `${rootState.url}/editAnswer`;
-            // await Axios.post(url, answer);
+            const url = `${rootState.url}/editAnswer`;
+            await Axios.put(url, answer);
         }
     }
 };

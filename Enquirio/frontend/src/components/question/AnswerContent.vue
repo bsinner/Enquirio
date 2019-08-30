@@ -9,7 +9,10 @@
             </div>
 
             <text-post-form v-if="!showAnswer"
-                    v-on:hideForm="hideEdit">
+                    v-on:hideForm="hideEdit"
+                    v-on:submitForm="submitEdit"
+                    :title="answer.title"
+                    :contents="answer.contents">
             </text-post-form>
 
             <br>
@@ -30,6 +33,7 @@
 <script>
 import TextPostButtons from "./_shared/TextPostButtons";
 import TextPostForm from "./_shared/TextPostForm";
+import { mapActions } from "vuex";
 
 export default {
     props: [ "answer" ],
@@ -40,12 +44,28 @@ export default {
         }
     },
     methods: {
+        ...mapActions("question", { editAnswer: "editAnswer" }),
         showEdit() {
-            this.showAnswer = false;            
+            this.showAnswer = false;
         },
         hideEdit() {
-            this.showAnswer = true;            
+            this.showAnswer = true;
         },
+        async submitEdit(title, contents) {            
+            try { 
+                await this.editAnswer({
+                    answer: this.answer, 
+                    title: title, 
+                    contents: contents
+                }); 
+            } catch (err) {
+                // TODO: show error and revert answer title and contents if 
+                //       not logged in or other error
+                
+            }
+
+            this.hideEdit();
+        }
     }
 }
 </script>
