@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+    
 namespace Enquirio {
     public class Startup {
 
@@ -40,7 +40,11 @@ namespace Enquirio {
             app.UseRouting();
 
             if (env.IsDevelopment()) {
-                app.UseCors(c => c.WithOrigins(Configuration["VueCliUrl"]));
+                app.UseCors(c => {
+                    c.WithOrigins(Configuration["VueCliUrl"])
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
             }
 
             app.UseEndpoints(endpoints => {

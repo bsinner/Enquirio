@@ -4,7 +4,7 @@
         <br>
         <div>
             <input v-model="localTitle"
-                    @input="titleError = false"              
+                    @input="titleError = false"
                     type="text" class="form-control">
             <small class="text-danger" v-if="titleError">
                 Title must not be blank
