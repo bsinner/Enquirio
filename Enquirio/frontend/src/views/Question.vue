@@ -10,8 +10,8 @@
                     </question-content>
                 </div>
 
-                <answer-content v-for="(a, i) in question.answers"
-                        v-bind:key="i" :answer="a">                    
+                <answer-content v-for="an in question.answers"
+                        v-bind:key="an.id" :answer="an">                    
                 </answer-content>            
 
             </div>
