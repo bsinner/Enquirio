@@ -1,13 +1,13 @@
 <template>
     <div class="col-sm-8">
         
-        <div v-if="showQuestion">
+        <div v-if="isQuestionVisible">
             <h4>{{ question.title }}</h4>
             <p>{{ question.contents }}</p>
         </div>
 
-        <text-post-form v-if="!showQuestion"
-                @hideForm="hideEdit"
+        <text-post-form v-if="isEditQuestionVisible"
+                @hideForm="showQuestion"
                 @submitForm="submitEdit"
                 :title="question.title"
                 :contents="question.contents">
@@ -17,10 +17,17 @@
         <i>Asked by Author on {{ question.created }}</i>
 
         <br><br>
-        <text-post-buttons v-if="showQuestion"
-                @showEdit="showEdit"
+        <text-post-form v-if="isCreateAnswerVisible"
+                @hideForm="showQuestion"
+                @submitForm="submitAnswer">
+        </text-post-form>
+
+        <br><br>
+        <text-post-buttons v-if="isQuestionBtnsVisible"
+                @showEdit="showEditQuestionForm"
                 @deleteItem="deleteQuestion">
-            <button class="btn btn-outline-dark float-right">Answer</button>
+            <button class="btn btn-outline-dark float-right"
+                    @click="showCreateAnswerForm">Answer</button>
         </text-post-buttons>
 
     </div>
@@ -35,19 +42,33 @@ export default {
     props: [ "question" ],
     components: { TextPostButtons, TextPostForm },
     data() { 
-        return { showQuestion: true };
+        return { 
+            isQuestionVisible: true,
+            isQuestionBtnsVisible: true,
+            isCreateAnswerVisible: false,
+            isEditQuestionVisible: false
+        };
     },
     methods: {
         ...mapActions("question", {
             editQuestion: "editQuestion",
             removeQuestion: "deleteQuestion"
         }),
-        showEdit() { 
-            this.showQuestion = false;
+        showQuestion() {
+            this.swapVisibility(true, true, false, false);
         },
-        hideEdit() { 
-            this.showQuestion = true;
+        showCreateAnswerForm() {
+            this.swapVisibility(true, false, true, false);
         },
+        showEditQuestionForm() {
+            this.swapVisibility(false, false, false, true);
+        },
+        swapVisibility(q, qBtns, anForm, editForm) {
+            this.isQuestionVisible = q;
+            this.isQuestionBtnsVisible = qBtns;
+            this.isCreateAnswerVisible = anForm;
+            this.isEditQuestionVisible = editForm;
+        },        
         async deleteQuestion() {
             try {
                 await this.removeQuestion();
@@ -68,6 +89,8 @@ export default {
             }
 
             this.hideEdit();
+        },
+        async submitAnswer(title, contents) {            
         }
     }
 }
