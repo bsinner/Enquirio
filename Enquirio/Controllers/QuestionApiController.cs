@@ -65,28 +65,6 @@ namespace Enquirio.Controllers {
             return Ok(answer.Id.ToString());
         }
 
-        [HttpPut("editAnswer")]
-        [Consumes("application/json")]
-        public async Task<IActionResult> EditAnswer([FromBody] Answer edited) {
-            if (InvalidEntity(edited, false)) {
-                return BadRequest();
-            }
-
-            var answer = await _repo.GetByIdAsync<Answer>(edited.Id);
-
-            if (answer == null) {
-                return NotFound();
-            }
-
-            answer.Title = edited.Title;
-            answer.Contents = edited.Contents;
-
-            _repo.Update(answer);
-            await _repo.SaveAsync();
-
-            return Ok();
-        }
-
         [HttpDelete("deleteAnswer/{id}")]
         public async Task<IActionResult> DeleteAnswer(int id) {
             return await DeleteEntity<Answer>(id);
@@ -100,31 +78,16 @@ namespace Enquirio.Controllers {
         [HttpPut("editQuestion")]
         [Consumes("application/json")]
         public async Task<IActionResult> EditQuestion([FromBody] Question edited) {
-            if (InvalidEntity(edited, false)) {
-                return BadRequest();
-            }
-
-            var question = await _repo.GetByIdAsync<Question>(edited.Id);
-
-            if (question == null) {
-                return NotFound();
-            }
-
-            question.Contents = edited.Contents;
-            question.Title = edited.Title;
-
-            _repo.Update(question);
-            await _repo.SaveAsync();
-
-            return Ok();
+            return await EditPost(edited);
         }
 
-        // Return true if entity is invalid, zeroId allows entities with ID 0
-        private bool InvalidEntity(IPost post, bool zeroId = true) =>
-            string.IsNullOrEmpty(post.Title)
-            || string.IsNullOrEmpty(post.Contents)
-            || (!zeroId && post.Id == 0);
+        [HttpPut("editAnswer")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> EditAnswer([FromBody] Answer edited) {
+            return await EditPost(edited);
+        }
 
+        // Generic method to delete an entity
         private async Task<IActionResult> DeleteEntity<T>(int id) 
                 where T : class, IEntity {
 
@@ -142,10 +105,43 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
+        // Generic method to edit the title and contents of a text post
+        private async Task<IActionResult> EditPost<T>(T edited) 
+                where T : class, IPost {
+
+            if (InvalidEntity(edited, false)) {
+                return BadRequest();
+            }
+
+            var original = await _repo.GetByIdAsync<T>(edited.Id);
+
+            if (original == null) {
+                return NotFound();
+            }
+
+            original.Title = edited.Title;
+            original.Contents = edited.Contents;
+
+            _repo.Update(original);
+            await _repo.SaveAsync();
+
+            return Ok();
+        }
+
+        // Return true if entity is invalid, zeroId allows entities with ID 0 for
+        // when an entity is created without an ID and the database assigns an ID
+        private bool InvalidEntity(IPost post, bool zeroId = true) =>
+            string.IsNullOrEmpty(post.Title)
+            || string.IsNullOrEmpty(post.Contents)
+            || (!zeroId && post.Id == 0)
+            || (post.Id < 0);
+
+
         // Get one page of questions
         private async Task<List<Question>> GetPage(int page) {
             return await _repo.GetAllAsync<Question>(
-                orderBy: q => q.Created, sortDesc: true, skip: PageLength * page - PageLength, take: PageLength);
+                orderBy: q => q.Created, sortDesc: true
+                , skip: PageLength * page - PageLength, take: PageLength);
         }
 
         // Get number of last page of questions
