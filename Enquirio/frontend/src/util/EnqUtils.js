@@ -33,6 +33,17 @@ const ObjUtil = (function() {
     }
 
     /*
+     * Get a shallow copy of an object
+     */
+    function getCopy(obj) {
+        const temp = {};
+        _loopObject(obj, (k, v) => {
+            temp[k] = v;
+        });
+        return temp;
+    }
+
+    /*
      * Get a shallow copy of an object and skip given properties,
      * toSkip can be an array or a single string
      */
@@ -60,6 +71,7 @@ const ObjUtil = (function() {
     return {
         arrayToMap: arrayToMap,
         mapToArray: mapToArray,
-        getWithoutProperties: getWithoutProperties
+        getWithoutProperties: getWithoutProperties,
+        getCopy: getCopy
     };
 })();
