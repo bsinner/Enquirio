@@ -114,6 +114,7 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task DeleteAnswerTest() {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
+            var id = 10;
 
             repo.Setup(r => r.ExistsAsync<Answer>
                     (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(true);
@@ -121,14 +122,14 @@ namespace Enquirio.Tests.Tests.Controllers {
             var controller = new QuestionApiController(repo.Object);
 
             // Act
-            var result = await controller.DeleteAnswer(10);
+            var result = await controller.DeleteAnswer(id);
 
             // Assert
             Assert.IsType<OkResult>(result);
 
             repo.Verify(r => r.ExistsAsync<Answer>
                 (It.IsAny<Expression<Func<Answer, bool>>>()), Times.Once);
-            repo.Verify(r => r.DeleteById<Answer>(10), Times.Once);
+            repo.Verify(r => r.DeleteById<Answer>(id), Times.Once);
             repo.Verify(r => r.SaveAsync(), Times.Once);
             repo.VerifyNoOtherCalls();
         }
@@ -137,6 +138,9 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task DeleteAnswerErrorTest() {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
+            var notFoundId = 7000;
+            var badId1 = 0;
+            var badId2 = -100;
 
             repo.Setup(r => r.ExistsAsync<Answer>
                     (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(false);
@@ -144,10 +148,13 @@ namespace Enquirio.Tests.Tests.Controllers {
             var controller = new QuestionApiController(repo.Object);
 
             // Act
-            var result = await controller.DeleteAnswer(999);
+            var notFoundResult = await controller.DeleteAnswer(notFoundId);
+            var badReqResult = await controller.DeleteAnswer(badId1);
+            await controller.DeleteAnswer(badId2);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            Assert.IsType<NotFoundResult>(notFoundResult);
+            Assert.IsType<BadRequestResult>(badReqResult);
 
             repo.Verify(r => r.ExistsAsync<Answer>
                 (It.IsAny<Expression<Func<Answer, bool>>>()), Times.Once);
@@ -203,6 +210,57 @@ namespace Enquirio.Tests.Tests.Controllers {
         }
 
         [Fact]
+        public async Task DeleteQuestionTest() {
+            // Arrange
+            var repo = new Mock<IRepositoryEnq>();
+            var id = 1;
+
+            repo.Setup(r => r.ExistsAsync<Question>
+                    (It.IsAny<Expression<Func<Question, bool>>>())).ReturnsAsync(true);
+
+            var controller = new QuestionApiController(repo.Object);
+
+            // Act
+            var result = await controller.DeleteQuestion(id);
+
+            // Assert
+            Assert.IsType<OkResult>(result);
+
+            repo.Verify(r => r.ExistsAsync<Question>
+                    (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+            repo.Verify(r => r.DeleteById<Question>(id), Times.Once);
+            repo.Verify(r => r.SaveAsync(), Times.Once);
+            repo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task DeleteQuestionErrorTest() {
+            // Arrange
+            var repo = new Mock<IRepositoryEnq>();
+            var notFoundId = 8000;
+            var badId1 = 0;
+            var badId2 = -10;
+
+            repo.Setup(r => r.ExistsAsync<Question>
+                    (It.IsAny<Expression<Func<Question, bool>>>())).ReturnsAsync(false);
+            
+            var controller = new QuestionApiController(repo.Object);
+
+            // Act
+            var notFoundResult = await controller.DeleteQuestion(notFoundId);
+            var badReqResult = await controller.DeleteQuestion(badId1);
+            await controller.DeleteQuestion(badId2);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(notFoundResult);
+            Assert.IsType<BadRequestResult>(badReqResult);
+
+            repo.Verify(r => r.ExistsAsync<Question>
+                    (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+            repo.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public void HttpVerbTests() {
             Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
                 , typeof(HttpPostAttribute)));
@@ -215,6 +273,9 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion)
                 , typeof(HttpPutAttribute)));
+
+            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteQuestion)
+                , typeof(HttpDeleteAttribute)));
         }
     }
 }
