@@ -11,7 +11,11 @@ export default {
         setQuestion(state, question) {
             state.question = question;
         },
-        setAnswer(state, { answer }) {
+        updateQuestion(state, { question }) {
+            state.question.title = question.title;
+            state.question.contents = question.contents;
+        },
+        updateAnswer(state, { answer }) {
             const id = answer.id;
             state.question.answers[id].title = answer.title;
             state.question.answers[id].contents = answer.contents;
@@ -34,11 +38,11 @@ export default {
         async editQuestion({ commit, rootState }, { question, title, contents }) {
             const url = `${rootState.url}/editQuestion`;
             const updated = ObjUtil.getWithoutProperties(question, "answers");
-            updated.title = newTitle;
+            updated.title = title;
             updated.contents = contents;
 
             await Axios.put(url, updated);
-            commit("setQuestion", { question: updated })
+            commit("updateQuestion", { question: updated })
         },
 
         async editAnswer({ commit, rootState }, { answer, title, contents }) {
@@ -48,7 +52,7 @@ export default {
             updated.contents = contents;
 
             await Axios.put(url, updated);
-            commit("setAnswer", { answer: updated });
+            commit("updateAnswer", { answer: updated });
         },
 
         async deleteAnswer({ commit, rootState }, { answer }) {

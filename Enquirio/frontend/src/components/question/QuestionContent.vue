@@ -29,6 +29,7 @@
 <script>
 import TextPostButtons from "./_shared/TextPostButtons";
 import TextPostForm from "./_shared/TextPostForm";
+import { mapActions } from "vuex";
 
 export default {
     props: [ "question" ],
@@ -37,6 +38,9 @@ export default {
         return { showQuestion: true };
     },
     methods: {
+        ...mapActions("question", {
+            editQuestion: "editQuestion"
+        }),
         showEdit() { 
             this.showQuestion = false;
         },
@@ -44,10 +48,19 @@ export default {
             this.showQuestion = true;
         },
         async deleteQuestion() {
-
         },
-        async submitEdit() {
+        async submitEdit(title, contents) {
+            try {
+                await this.editQuestion({ 
+                    question: this.question,
+                    title: title,
+                    contents: contents
+                });
+            } catch (err) {
+                // TODO: handle not logged in/other error
+            }
 
+            this.hideEdit();
         }
     }
 }

@@ -56,17 +56,15 @@ export default {
         hideEdit() {
             this.showAnswer = true;
         },
-        async submitEdit(title, contents) {            
+        async submitEdit(title, contents) {
             try {
                 await this.editAnswer({
                     answer: this.answer, 
                     title: title, 
                     contents: contents
-                }); 
+                });
             } catch (err) {
-                // TODO: show error and revert answer title and contents if 
-                //       not logged in or other error
-                
+                // TODO: show error if not logged in or other error                
             }
 
             this.hideEdit();
@@ -75,7 +73,7 @@ export default {
             try {
                 await this.delAnswer({ answer: this.answer });
             } catch (err) {                
-                // TODO: show error displaying if not logged in or other error
+                // TODO: show error if not logged in or other error
             }
         }
     }
