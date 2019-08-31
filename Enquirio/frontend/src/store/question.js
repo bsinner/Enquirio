@@ -11,17 +11,20 @@ export default {
         setQuestion(state, question) {
             state.question = question;
         },
-        updateQuestion(state, { question }) {
+        updateQuestion(state, question) {
             state.question.title = question.title;
             state.question.contents = question.contents;
         },
-        updateAnswer(state, { answer }) {
+        updateAnswer(state, answer) {
             const id = answer.id;
             state.question.answers[id].title = answer.title;
             state.question.answers[id].contents = answer.contents;
         },
-        removeAnswer(state, { id }) {
+        removeAnswer(state, id) {
             Vue.delete(state.question.answers, id);
+        },
+        addAnswer(state, answer) {
+            Vue.set(state.question.answers, answer.id, answer);
         }
     },
     actions: {
@@ -42,7 +45,7 @@ export default {
             updated.contents = contents;
 
             await Axios.put(url, updated);
-            commit("updateQuestion", { question: updated })
+            commit("updateQuestion", updated);
         },
 
         async deleteQuestion({ state, rootState }) {
@@ -57,7 +60,7 @@ export default {
             updated.contents = contents;
 
             await Axios.put(url, updated);
-            commit("updateAnswer", { answer: updated });
+            commit("updateAnswer", updated);
         },
 
         async deleteAnswer({ commit, rootState }, { answer }) {
@@ -65,7 +68,19 @@ export default {
             const url = `${rootState.url}/deleteAnswer/${id}`;
 
             await Axios.delete(url);
-            commit("removeAnswer", { id });
+            commit("removeAnswer", id);
+        },
+
+        async createAnswer({ commit, rootState, state }, { title, contents }) {
+            const url = `${rootState.url}/createAnswer`;
+
+            const data = await (await Axios.post(url, {
+                title: title,
+                contents: contents,
+                questionId: state.question.id
+            })).data;
+            console.log("action: " + data);
+            commit("addAnswer", data);
         }
     }
 };

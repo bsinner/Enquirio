@@ -30,8 +30,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("50", (result as OkObjectResult).Value);
-                
+
             repo.Verify(r => r.Create(answer), Times.Once);
             repo.Verify(r => r.SaveAsync(), Times.Once);
             repo.Verify(r => r.ExistsAsync<Question>

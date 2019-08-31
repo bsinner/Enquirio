@@ -62,7 +62,7 @@ namespace Enquirio.Controllers {
             _repo.Create(answer);
             await _repo.SaveAsync();
 
-            return Ok(answer.Id.ToString());
+            return Ok(answer);
         }
 
         [HttpDelete("deleteAnswer/{id}")]

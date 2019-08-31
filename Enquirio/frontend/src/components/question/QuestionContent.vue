@@ -52,7 +52,8 @@ export default {
     methods: {
         ...mapActions("question", {
             editQuestion: "editQuestion",
-            removeQuestion: "deleteQuestion"
+            removeQuestion: "deleteQuestion",
+            createAnswer: "createAnswer"
         }),
         showQuestion() {
             this.swapVisibility(true, true, false, false);
@@ -88,9 +89,19 @@ export default {
                 // TODO: handle not logged in/other error
             }
 
-            this.hideEdit();
+            this.showQuestion();
         },
-        async submitAnswer(title, contents) {            
+        async submitAnswer(title, contents) {
+            try {
+                await this.createAnswer({
+                    title: title,
+                    contents: contents
+                });                
+            } catch (err) {
+                // TODO: handle not logged in/other error
+            }
+
+            this.showQuestion();
         }
     }
 }
