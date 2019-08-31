@@ -39,7 +39,8 @@ export default {
     },
     methods: {
         ...mapActions("question", {
-            editQuestion: "editQuestion"
+            editQuestion: "editQuestion",
+            removeQuestion: "deleteQuestion"
         }),
         showEdit() { 
             this.showQuestion = false;
@@ -48,6 +49,12 @@ export default {
             this.showQuestion = true;
         },
         async deleteQuestion() {
+            try {
+                await this.removeQuestion();
+                this.$router.push("/");
+            } catch (err) {
+                // TODO: handle not logged in/other error
+            }
         },
         async submitEdit(title, contents) {
             try {

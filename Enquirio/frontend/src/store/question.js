@@ -45,6 +45,11 @@ export default {
             commit("updateQuestion", { question: updated })
         },
 
+        async deleteQuestion({ state, rootState }) {
+            const url = `${rootState.url}/deleteQuestion/${state.question.id}`;
+            await Axios.delete(url);
+        },
+
         async editAnswer({ commit, rootState }, { answer, title, contents }) {
             const url = `${rootState.url}/editAnswer`;
             const updated = ObjUtil.getCopy(answer);
