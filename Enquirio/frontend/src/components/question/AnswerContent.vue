@@ -9,8 +9,8 @@
             </div>
 
             <text-post-form v-if="!showAnswer"
-                    v-on:hideForm="hideEdit"
-                    v-on:submitForm="submitEdit"
+                    @hideForm="hideEdit"
+                    @submitForm="submitEdit"
                     :title="answer.title"
                     :contents="answer.contents">
             </text-post-form>
@@ -22,7 +22,9 @@
 
             <div v-if="showAnswer">
                 <br><br>
-                <text-post-buttons v-on:showEdit="showEdit">                     
+                <text-post-buttons
+                        @showEdit="showEdit"
+                        @deleteItem="deleteAnswer">
                 </text-post-buttons>
             </div>
 
@@ -44,7 +46,10 @@ export default {
         }
     },
     methods: {
-        ...mapActions("question", { editAnswer: "editAnswer" }),
+        ...mapActions("question", { 
+            editAnswer: "editAnswer",
+            delAnswer: "deleteAnswer"
+        }),
         showEdit() {
             this.showAnswer = false;
         },
@@ -52,7 +57,7 @@ export default {
             this.showAnswer = true;
         },
         async submitEdit(title, contents) {            
-            try { 
+            try {
                 await this.editAnswer({
                     answer: this.answer, 
                     title: title, 
@@ -65,6 +70,13 @@ export default {
             }
 
             this.hideEdit();
+        },
+        async deleteAnswer() {
+            try {
+                await this.delAnswer({ answer: this.answer });
+            } catch (err) {                
+                // TODO: show error displaying if not logged in or other error
+            }
         }
     }
 }
