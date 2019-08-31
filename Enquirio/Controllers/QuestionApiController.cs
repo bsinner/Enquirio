@@ -54,7 +54,8 @@ namespace Enquirio.Controllers {
                 return BadRequest();
             }
 
-            if (await EntityNotFound(qId : answer.QuestionId)) {
+            if (!await _repo.ExistsAsync<Question>
+                    (q => q.Id == answer.QuestionId)) {
                 return NotFound();
             }
 
@@ -86,16 +87,14 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
-        [HttpDelete("deleteAnswer/{answerId}")]
-        public async Task<IActionResult> DeleteAnswer(int answerId) {
-            if (await EntityNotFound(answerId)) {
-                return NotFound();
-            }
+        [HttpDelete("deleteAnswer/{id}")]
+        public async Task<IActionResult> DeleteAnswer(int id) {
+            return await DeleteEntity<Answer>(id);
+        }
 
-            _repo.DeleteById<Answer>(answerId);
-            await _repo.SaveAsync();
-
-            return Ok();
+        [HttpDelete("deleteQuestion/{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id) {
+            return await DeleteEntity<Question>(id);
         }
 
         [HttpPut("editQuestion")]
@@ -126,19 +125,21 @@ namespace Enquirio.Controllers {
             || string.IsNullOrEmpty(post.Contents)
             || (!zeroId && post.Id == 0);
 
-        // Search db for entity, return true if it isn't found
-        private async Task<bool> EntityNotFound(int? aId = null, int? qId = null) {
-            bool notFound = true;
+        private async Task<IActionResult> DeleteEntity<T>(int id) 
+                where T : class, IEntity {
 
-            if (aId != null) {
-                notFound = !await _repo.ExistsAsync<Answer>(a => a.Id == aId);
+            if (id < 1) {
+                return BadRequest();
             }
 
-            if (qId != null) {
-                notFound = !await _repo.ExistsAsync<Question>(q => q.Id == qId);
+            if (!await _repo.ExistsAsync<T>(t => t.Id == id)) {
+                return NotFound();
             }
 
-            return notFound;
+            _repo.DeleteById<T>(id);
+            await _repo.SaveAsync();
+
+            return Ok();
         }
 
         // Get one page of questions
