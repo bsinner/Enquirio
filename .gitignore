@@ -8,7 +8,8 @@ Enquirio/wwwroot/dist/
 Enquirio/wwwroot/css/
 Enquirio/wwwroot/js/
 Enquirio/wwwroot/index.html
-*sampleUsers.json*
+*/appsettings.json
+!CloneSetup/appsettings.json
 
 # May unignore later
 *PublishProfiles/
