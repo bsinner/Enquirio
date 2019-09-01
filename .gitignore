@@ -8,6 +8,7 @@ Enquirio/wwwroot/dist/
 Enquirio/wwwroot/css/
 Enquirio/wwwroot/js/
 Enquirio/wwwroot/index.html
+*sampleUsers.json*
 
 # May unignore later
 *PublishProfiles/

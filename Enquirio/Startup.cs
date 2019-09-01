@@ -1,6 +1,7 @@
 ﻿using Enquirio.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,10 @@ namespace Enquirio {
                 );
             });
 
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<DbContextEnq>()
+                .AddDefaultTokenProviders();
+
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
             services.AddSingleton(Environment);
         }
@@ -46,6 +51,9 @@ namespace Enquirio {
                         .AllowAnyMethod();
                 });
             }
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
