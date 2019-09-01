@@ -9,8 +9,9 @@ namespace Enquirio.Controllers {
 
     [Route("/api/")]
     public class QuestionApiController : Controller {
-
+        
         private readonly IRepositoryEnq _repo;
+        private enum IDType { ZERO, ANY, NON_ZERO };
         public const int PageLength = 15;
 
         public QuestionApiController(IRepositoryEnq repo) => _repo = repo;
@@ -50,7 +51,7 @@ namespace Enquirio.Controllers {
         [HttpPost("createAnswer")]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateAnswer([FromBody] Answer answer) {
-            if (InvalidEntity(answer)) {
+            if (InvalidEntity(answer, IDType.ZERO)) {
                 return BadRequest();
             }
 
@@ -63,6 +64,19 @@ namespace Enquirio.Controllers {
             await _repo.SaveAsync();
 
             return Ok(answer);
+        }
+
+        [HttpPost("createQuestion")]
+        [Consumes("application/json")]
+        public async Task<IActionResult> CreateQuestion([FromBody] Question question) {
+            if (InvalidEntity(question, IDType.ZERO)) {
+                return BadRequest();
+            }
+
+            _repo.Create(question);
+            await _repo.SaveAsync();
+
+            return Ok(question);
         }
 
         [HttpDelete("deleteAnswer/{id}")]
@@ -109,7 +123,7 @@ namespace Enquirio.Controllers {
         private async Task<IActionResult> EditPost<T>(T edited) 
                 where T : class, IPost {
 
-            if (InvalidEntity(edited, false)) {
+            if (InvalidEntity(edited, IDType.NON_ZERO)) {
                 return BadRequest();
             }
 
@@ -130,10 +144,11 @@ namespace Enquirio.Controllers {
 
         // Return true if entity is invalid, zeroId allows entities with ID 0 for
         // when an entity is created without an ID and the database assigns an ID
-        private bool InvalidEntity(IPost post, bool zeroId = true) =>
+        private bool InvalidEntity(IPost post, IDType idType) =>
             string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)
-            || (!zeroId && post.Id == 0)
+            || (idType == IDType.ZERO && post.Id != 0)
+            || (idType == IDType.NON_ZERO && post.Id == 0)
             || (post.Id < 0);
 
 

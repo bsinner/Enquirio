@@ -50,7 +50,7 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task CreateAnswerTest() {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
-            var answer = QuestionData.TestAnswer;
+            var answer = QuestionData.TestAnswerMinProps;
 
             repo.Setup(r => r.ExistsAsync<Question>
                 (It.IsAny<Expression<Func<Question, bool>>>()))
@@ -75,20 +75,21 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task CreateAnswerErrorTest() {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
-            var answer = QuestionData.TestAnswer;
+            var answer = QuestionData.TestAnswerMinProps;
             var errAnswer = QuestionData.InvalidTestAnswer;
 
             repo.Setup(r => r.ExistsAsync<Question>(q => q.Id == answer.Id))
                 .ReturnsAsync(false);
 
             var controller = new QuestionApiController(repo.Object);
+
             // Act
             var notFoundResult = await controller.CreateAnswer(answer);
             var badReqResult = await controller.CreateAnswer(errAnswer);
 
             // Assert
-            Assert.IsType<BadRequestResult>(badReqResult);
             Assert.IsType<NotFoundResult>(notFoundResult);
+            Assert.IsType<BadRequestResult>(badReqResult);
 
             repo.Verify(r => r.ExistsAsync<Question>
                 (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
@@ -309,6 +310,9 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             Assert.True(HasAttribute(nameof(QuestionApiController.DeleteQuestion)
                 , typeof(HttpDeleteAttribute)));
+
+            Assert.True(HasAttribute(nameof(QuestionApiController.CreateQuestion)
+                , typeof(HttpPostAttribute)));
         }
     }
 }
