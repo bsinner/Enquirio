@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Enquirio.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Enquirio.Data {
 
@@ -14,17 +16,51 @@ namespace Enquirio.Data {
         private const int MaxDays = 60;
         private static readonly Random _random = new Random();
 
-        public static void Initialize(DbContextEnq context) {
+        public static async Task Initialize(DbContextEnq context
+                , IServiceProvider provider, IConfiguration config) {
+
             context.Database.EnsureCreated();
 
             if (context.Question.Any()) {
                 return; 
             }
 
+            await CreateAdminIfNotExists(provider, config);
             context.AddRange(GetQuestions());
             context.SaveChanges();
         }
 
+        public static async Task CreateAdminIfNotExists(IServiceProvider provider
+                , IConfiguration config) {
+
+            var userManager = provider
+                .GetRequiredService<UserManager<IdentityUser>>();
+            var roleManager = provider
+                .GetRequiredService<RoleManager<IdentityRole>>();
+
+            var username = config["Users:AdminUser:Name"];
+            var email = config["Users:AdminUser:Email"];
+            var password = config["Users:AdminUser:Password"];
+            var role = config["Users:AdminUser:Role"];
+
+            // If admin not found add it
+            if (await userManager.FindByNameAsync(username) == null) {
+
+                // Create role if not found
+                if (await roleManager.FindByNameAsync(role) == null) {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+
+                var user = new IdentityUser { UserName = username, Email = email };
+                IdentityResult result = await userManager.CreateAsync(user, password);
+
+                if (result.Succeeded) {
+                    await userManager.AddToRoleAsync(user, role);
+                }
+            }
+        }
+
+        // Create var Count questions
         private static IEnumerable<Question> GetQuestions() {
             for (int i = 1; i <= Count; i++) {
                 var dateDiff = _random.Next(MaxDays * 2) - MaxDays;
