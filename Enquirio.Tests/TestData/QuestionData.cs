@@ -12,7 +12,11 @@ namespace Enquirio.Tests.TestData {
                     , new Answer { Id = 2, Title = "A2", Contents = "...", Created = DateTime.Now }}
             };
 
-        public static Question InvalidTestQuestion
+        public static Question TestQuestionMinProps = new Question { Title = "Q1", Contents = "..." };
+
+        public static Question CreateTestInvalidQuestion = new Question { Id = 999, Title = "", Contents = null };
+
+        public static Question EditTestInvalidTestQuestion
             = new Question { Id = 0, Title = null, Contents = "", Created = DateTime.Now, Answers = new List<Answer>() };
 
         public static Answer TestAnswer
