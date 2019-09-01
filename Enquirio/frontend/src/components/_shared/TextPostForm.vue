@@ -15,7 +15,7 @@
         <div>
             <textarea v-model="localContents"
                     @input="contentsError = false"                   
-                    rows="5" class="form-control"></textarea>
+                    :rows="rows" class="form-control"></textarea>
             <small class="text-danger" v-if="contentsError">
                 Contents must not be blank
             </small>
@@ -23,7 +23,7 @@
 
         <br>
         <button class="btn btn-outline-info float-right" 
-                @click="$emit('hideForm')">Cancel
+                @click="$emit('hideForm')">{{ cancelBtnText }}
         </button>
         <button class="btn btn-outline-dark float-right mr-2"
                 @click="submitForm">Submit
@@ -34,15 +34,28 @@
 
 <script>
 export default {
-    props: [ "title", "contents" ],
+    props: [ "title", "contents", "cancelBtnTxt", "rowsCount" ],
     data() { 
         return {
             titleError: false,
             contentsError: false,
             localTitle: "",
             localContents: ""
+        }        
+    }, 
+    computed: {
+        cancelBtnText() {
+            return this.cancelBtnTxt 
+                ? this.cancelBtnTxt
+                : "Cancel";
+        },
+        rows() {
+            return this.rowsCount
+                ? this.rowsCount
+                : "5";
         }
-    }, methods: {
+    },
+    methods: {
         submitForm($event) {
             // If neither feild is empty emit title and contents          
             if (this.localTitle && this.localContents) {                

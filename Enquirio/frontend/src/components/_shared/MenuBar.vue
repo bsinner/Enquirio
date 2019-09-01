@@ -12,7 +12,7 @@
                     </router-link>
                 </li>
                 <li>
-                    <router-link to="/create" class="nav-link">
+                    <router-link to="/ask" class="nav-link">
                         Ask Question
                     </router-link>
                 </li>

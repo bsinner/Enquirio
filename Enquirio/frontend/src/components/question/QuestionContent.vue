@@ -35,7 +35,7 @@
 
 <script>
 import TextPostButtons from "./_shared/TextPostButtons";
-import TextPostForm from "./_shared/TextPostForm";
+import TextPostForm from "../_shared/TextPostForm";
 import { mapActions } from "vuex";
 
 export default {
