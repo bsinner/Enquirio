@@ -23,7 +23,7 @@
 
         <br>
         <button class="btn btn-outline-info float-right" 
-                @click="$emit('hideForm')">{{ cancelBtnText }}
+                @click="$emit('cancelForm')">{{ cancelBtnText }}
         </button>
         <button class="btn btn-outline-dark float-right mr-2"
                 @click="submitForm">Submit
@@ -56,7 +56,7 @@ export default {
         }
     },
     methods: {
-        submitForm($event) {
+        submitForm() {
             // If neither feild is empty emit title and contents          
             if (this.localTitle && this.localContents) {                
                 this.$emit("submitForm", 

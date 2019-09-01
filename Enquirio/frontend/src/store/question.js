@@ -28,6 +28,16 @@ export default {
         }
     },
     actions: {
+        async createQuestion({ rootState }, { title, contents }) {
+            const url = `${rootState.url}/createQuestion`;
+
+            const data = (await Axios.post(url, {
+                title: title,
+                contents: contents
+            })).data;
+
+            return data.id;
+        },
         async getQuestion({ commit, rootState }, id) {
             const url = `${rootState.url}/question/${id}`;
             let data = (await Axios.get(url)).data;
@@ -74,12 +84,12 @@ export default {
         async createAnswer({ commit, rootState, state }, { title, contents }) {
             const url = `${rootState.url}/createAnswer`;
 
-            const data = await (await Axios.post(url, {
+            const data = (await Axios.post(url, {
                 title: title,
                 contents: contents,
                 questionId: state.question.id
             })).data;
-            console.log("action: " + data);
+
             commit("addAnswer", data);
         }
     }

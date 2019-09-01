@@ -7,7 +7,7 @@
         </div>
 
         <text-post-form v-if="isEditQuestionVisible"
-                @hideForm="showQuestion"
+                @cancelForm="showQuestion"
                 @submitForm="submitEdit"
                 :title="question.title"
                 :contents="question.contents">
@@ -18,7 +18,7 @@
 
         <br><br>
         <text-post-form v-if="isCreateAnswerVisible"
-                @hideForm="showQuestion"
+                @cancelForm="showQuestion"
                 @submitForm="submitAnswer">
         </text-post-form>
 

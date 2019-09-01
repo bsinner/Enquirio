@@ -9,7 +9,7 @@
             </div>
 
             <text-post-form v-if="!showAnswer"
-                    @hideForm="hideEdit"
+                    @cancelForm="hideEdit"
                     @submitForm="submitEdit"
                     :title="answer.title"
                     :contents="answer.contents">
