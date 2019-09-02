@@ -3,17 +3,17 @@
 namespace Enquirio.Tests.TestData {
     class AuthData {
 
-        public static LoginViewModel LoginNoEmail = new LoginViewModel {
+        public static LoginViewModel LoginWithUname = new LoginViewModel {
             Username = "foo", Password = "tT%5"
         };
-        public static LoginViewModel LoginNoUname = new LoginViewModel {
+        public static LoginViewModel LoginWithEmail = new LoginViewModel {
             Email = "foo@example.net", Password = "tT%5"
         };
         
-        public static LoginViewModel BadLoginNoPW = new LoginViewModel {
+        public static LoginViewModel BadLoginNoPw = new LoginViewModel {
             Password = "a"
         };
-        public static LoginViewModel BadLoginOnlyPW = new LoginViewModel {
+        public static LoginViewModel BadLoginOnlyPw = new LoginViewModel {
             Email = "a"
         };
     }

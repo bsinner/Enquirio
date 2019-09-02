@@ -8,10 +8,10 @@ using User = Microsoft.AspNetCore.Identity.IdentityUser;
 
 namespace Enquirio.Tests.TestData {
 
-    public class SignInManagerStub : SignInManager<User> {
+    public class StubSignInManager : SignInManager<User> {
 
-        public SignInManagerStub() : base (
-            new Mock<UserManagerStub>().Object
+        public StubSignInManager() : base (
+            new Mock<StubUserManager>().Object
             , new HttpContextAccessor()
             , new Mock<IUserClaimsPrincipalFactory<User>>().Object
             , new Mock<IOptions<IdentityOptions>>().Object

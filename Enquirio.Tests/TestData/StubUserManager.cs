@@ -7,9 +7,9 @@ using User = Microsoft.AspNetCore.Identity.IdentityUser;
 
 namespace Enquirio.Tests.TestData {
 
-    public class UserManagerStub : UserManager<User> {
+    public class StubUserManager : UserManager<User> {
 
-        public UserManagerStub() : base (
+        public StubUserManager() : base (
             new Mock<IUserStore<User>>().Object
             , new Mock<IOptions<IdentityOptions>>().Object
             , new Mock<IPasswordHasher<User>>().Object
