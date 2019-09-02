@@ -105,8 +105,20 @@ namespace Enquirio.Tests.Tests.Controllers {
         [Fact]
         public async Task TestLogout() {
             // Arrange
+            var signInManager = new Mock<StubSignInManager>();
+            var controller = new AuthApiController(
+                new Mock<StubUserManager>().Object
+                , signInManager.Object
+            );
+
             // Act
+            var result = await controller.Logout();
+
             // Assert
+            Assert.IsType<OkResult>(result);
+
+            signInManager.Verify(s => s.SignOutAsync(), Times.Once);
+            signInManager.VerifyNoOtherCalls();
         }
 
         [Fact]
