@@ -38,6 +38,11 @@ namespace Enquirio {
 
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
             services.AddSingleton(Environment);
+
+            services.Configure<IdentityOptions>(i => {
+                i.User.AllowedUserNameCharacters
+                    = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._+";
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

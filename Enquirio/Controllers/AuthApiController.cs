@@ -9,8 +9,8 @@ namespace Enquirio.Controllers {
     [Route("/api/")]
     public class AuthApiController : Controller {
 
-        private UserManager<IdentityUser> _userManager;
-        private SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
         public AuthApiController(UserManager<IdentityUser> userManager
                 , SignInManager<IdentityUser> signInManager) {
@@ -22,13 +22,39 @@ namespace Enquirio.Controllers {
         [HttpPost("login")]
         [Consumes("application/json")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model) {
-            return Ok();
+            await _signInManager.SignOutAsync();
+
+            if (isValid(model)) {
+
+                var user = !string.IsNullOrEmpty(model.Email)
+                    ? await _userManager.FindByEmailAsync(model.Email)
+                    : await _userManager.FindByNameAsync(model.Username);
+
+                if (user != null) {
+
+                    var result = await _signInManager
+                        .PasswordSignInAsync(user, model.Password, false, false);
+
+                    if (result.Succeeded) {
+                        return Ok();
+                    }
+                }
+            }
+
+            return Unauthorized();
         }
 
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout() {
+            await _signInManager.SignOutAsync();
             return Ok();
         }
+
+        private bool isValid(LoginViewModel model) 
+            => !string.IsNullOrEmpty(model.Password) 
+               && (!string.IsNullOrEmpty(model.Username) 
+                   || !string.IsNullOrEmpty(model.Email));
+
     }
 }
