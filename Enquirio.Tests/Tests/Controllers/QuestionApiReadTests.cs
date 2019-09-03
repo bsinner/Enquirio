@@ -134,12 +134,12 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void HttpVerbTests() {
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestions)
-                    , typeof(HttpGetAttribute)));
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetMaxPage)
-                    , typeof(HttpGetAttribute)));
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestion)
-                    , typeof(HttpGetAttribute)));
+            var t = typeof(QuestionApiController);
+            var get = typeof(HttpGetAttribute);
+
+            Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestions), get, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.GetMaxPage), get, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestion), get, t));
         }
 
         private Expression<Func<Question, IComparable>> Desc() 

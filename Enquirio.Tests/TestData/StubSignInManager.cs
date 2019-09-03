@@ -18,6 +18,6 @@ namespace Enquirio.Tests.TestData {
             , new Mock<ILogger<SignInManager<User>>>().Object
             , new Mock<IAuthenticationSchemeProvider>().Object
             , new Mock<IUserConfirmation<User>>().Object
-        ) {}
+        ) { }
     }
 }

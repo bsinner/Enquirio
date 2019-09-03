@@ -296,23 +296,17 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void HttpVerbTests() {
-            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer)
-                , typeof(HttpPostAttribute)));
-
-            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteAnswer)
-                , typeof(HttpDeleteAttribute)));
-
-            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer)
-                , typeof(HttpPutAttribute)));
-
-            Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion)
-                , typeof(HttpPutAttribute)));
-
-            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteQuestion)
-                , typeof(HttpDeleteAttribute)));
-
-            Assert.True(HasAttribute(nameof(QuestionApiController.CreateQuestion)
-                , typeof(HttpPostAttribute)));
+            var t = typeof(QuestionApiController);
+            var post = typeof(HttpPostAttribute);
+            var put = typeof(HttpPutAttribute);
+            var delete = typeof(HttpDeleteAttribute);
+            
+            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer), post, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteAnswer), delete, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer), put, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion), put, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteQuestion), delete, t));
+            Assert.True(HasAttribute(nameof(QuestionApiController.CreateQuestion), post, t));
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿
 using System.Threading.Tasks;
 using Enquirio.Controllers;
-using Enquirio.Models;
 using Enquirio.Tests.TestData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Enquirio.Tests.Tests.Controllers {
 
@@ -18,22 +19,21 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Arrange
             var userManager = new Mock<StubUserManager>();
             var signinManager = new Mock<StubSignInManager>();
-            var signInResult = new MockSignInResult(true);
 
             var user = new IdentityUser();
             var models = new [] { AuthData.LoginWithUname, AuthData.LoginWithEmail };
-            var passwords = It.IsIn(models.Select(m => m.Password));
+            var pws = new[] { models[0].Password, models[1].Password };
 
             userManager.Setup(u => u.FindByEmailAsync(models[1].Email))
                 .ReturnsAsync(user);
             userManager.Setup(u => u.FindByNameAsync(models[0].Username))
                 .ReturnsAsync(user);
             signinManager.Setup
-                (s => s.PasswordSignInAsync(user, passwords, false, false))
-                .ReturnsAsync(signInResult);
+                (s => s.PasswordSignInAsync(user, It.IsIn(pws), false, false))
+                .ReturnsAsync(SignInResult.Success);
 
             var controller = new AuthApiController(
-                    userManager.Object, signinManager.Object);
+                userManager.Object, signinManager.Object);
 
             // Act
             var result = await controller.Login(models[0]);
@@ -43,13 +43,15 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.IsType<OkResult>(result);
 
             signinManager.Verify(s => s.SignOutAsync(), Times.Exactly(2));
-            signinManager.Verify(s => s.PasswordSignInAsync(user, passwords, false, false)
+            signinManager.Verify
+                (s => s.PasswordSignInAsync(user, It.IsIn(pws), false, false)
                 , Times.Exactly(2));
             userManager.Verify(u => u.FindByEmailAsync(models[1].Email), Times.Once);
             userManager.Verify(u => u.FindByNameAsync(models[0].Username), Times.Once);
-
-            signinManager.VerifyNoOtherCalls();
+            
+            VerifyLoggers(signinManager, userManager);
             userManager.VerifyNoOtherCalls();
+            signinManager.VerifyNoOtherCalls();
         }
 
         // Test logging in without name, without password, test logging in
@@ -61,8 +63,6 @@ namespace Enquirio.Tests.Tests.Controllers {
             var signInManager = new Mock<StubSignInManager>();
 
             var user = new IdentityUser();
-            var signInResult = new MockSignInResult(false);
-
             var model = AuthData.LoginWithUname;
             var model2 = AuthData.LoginWithEmail;
             var invalidModels = new[] {
@@ -75,7 +75,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                 .ReturnsAsync(user);
             signInManager.Setup(s => s.PasswordSignInAsync
                 (user, model2.Password, false, false))
-                .ReturnsAsync(signInResult);
+                .ReturnsAsync(SignInResult.Failed);
 
             var controller = new AuthApiController(userManager.Object
                 , signInManager.Object);
@@ -90,14 +90,13 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Assert
             Assert.All(results, r => Assert.IsType<UnauthorizedResult>(r));
 
-            userManager.Verify(u => u.FindByNameAsync(model.Username)
-                , Times.Once);
-            userManager.Verify(u => u.FindByEmailAsync(model2.Email)
-                , Times.Once);
+            userManager.Verify(u => u.FindByNameAsync(model.Username), Times.Once);
+            userManager.Verify(u => u.FindByEmailAsync(model2.Email), Times.Once);
             signInManager.Verify(s => s.SignOutAsync(), Times.Exactly(4));
             signInManager.Verify(s => s.PasswordSignInAsync
                 (user, model2.Password, false, false), Times.Once);
 
+            VerifyLoggers(signInManager, userManager);
             userManager.VerifyNoOtherCalls();
             signInManager.VerifyNoOtherCalls();
         }
@@ -118,15 +117,24 @@ namespace Enquirio.Tests.Tests.Controllers {
             Assert.IsType<OkResult>(result);
 
             signInManager.Verify(s => s.SignOutAsync(), Times.Once);
+            VerifyLoggers(signInManager);
             signInManager.VerifyNoOtherCalls();
+        }
+
+        // SignInManager and UserManager set Logger internally 
+        private void VerifyLoggers(Mock<StubSignInManager> sm = null
+                , Mock<StubUserManager> um = null) {
+
+            sm?.VerifySet(s => s.Logger = It.IsAny<ILogger<SignInManager<IdentityUser>>>());
+            um?.VerifySet(u => u.Logger = It.IsAny<ILogger<UserManager<IdentityUser>>>());
         }
 
         [Fact]
         public void HttpVerbTests() {
-            Assert.True(HasAttribute(nameof(AuthApiController.Login)
-                    , typeof(HttpPostAttribute)));
-            Assert.True(HasAttribute(nameof(AuthApiController.Logout)
-                    , typeof(HttpPostAttribute)));
+            var t = typeof(AuthApiController);
+            var post = typeof(HttpPostAttribute);
+            Assert.True(HasAttribute(nameof(AuthApiController.Login), post, t));
+            Assert.True(HasAttribute(nameof(AuthApiController.Logout), post, t));
         }
     }
 }
