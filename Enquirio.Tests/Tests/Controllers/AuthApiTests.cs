@@ -147,7 +147,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             signInManager.Verify(s => s.SignOutAsync(), Times.Once);
             signInManager.Verify(s => s.PasswordSignInAsync
                 (It.IsAny<IdentityUser>(), userModel.Password, true, false), Times.Once);
-            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>()));
+            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
@@ -190,8 +190,29 @@ namespace Enquirio.Tests.Tests.Controllers {
         [Fact]
         public async Task TestSignUpAnonymous() {
             // Arrange
+            var userManager = new Mock<StubUserManager>();
+            var signInManager = new Mock<StubSignInManager>();
+
+            userManager.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var controller 
+                = new AuthApiController(userManager.Object, signInManager.Object);
+
             // Act
+            var result = await controller.SignUpAnonymous();
+
             // Assert
+            Assert.IsType<OkResult>(result);
+
+            signInManager.Verify(s => s.SignOutAsync(), Times.Once());
+            signInManager.Verify(s => s.PasswordSignInAsync
+                (It.IsAny<IdentityUser>(), It.IsAny<string>(), false, false), Times.Once);
+            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>()), Times.Once);
+
+            VerifyLoggers(signInManager, userManager);
+            signInManager.VerifyNoOtherCalls();
+            userManager.VerifyNoOtherCalls();
         }
 
         // SignInManager and UserManager use set Logger internally 
