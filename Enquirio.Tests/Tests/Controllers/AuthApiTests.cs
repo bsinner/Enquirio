@@ -1,9 +1,6 @@
-﻿
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Enquirio.Controllers;
-using Enquirio.Models;
 using Enquirio.Tests.TestData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -133,7 +130,8 @@ namespace Enquirio.Tests.Tests.Controllers {
             var userManager = new Mock<StubUserManager>();
             var userModel = AuthData.LoginAllProps;
 
-            userManager.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>()))
+            userManager.Setup(u => u.CreateAsync
+                (It.IsAny<IdentityUser>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
             var controller = new AuthApiController(userManager.Object, signInManager.Object);
@@ -147,7 +145,8 @@ namespace Enquirio.Tests.Tests.Controllers {
             signInManager.Verify(s => s.SignOutAsync(), Times.Once);
             signInManager.Verify(s => s.PasswordSignInAsync
                 (It.IsAny<IdentityUser>(), userModel.Password, true, false), Times.Once);
-            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>()), Times.Once);
+            userManager.Verify(u => u.CreateAsync
+                (It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
@@ -162,7 +161,8 @@ namespace Enquirio.Tests.Tests.Controllers {
             var models = new[] {AuthData.LoginWithUname, AuthData.LoginWithEmail
                     , AuthData.BadLoginNoPw, AuthData.BadLoginOnlyPw };
 
-            userManager.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>()))
+            userManager.Setup(u => u.CreateAsync
+                (It.IsAny<IdentityUser>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed());
 
             var controller 
@@ -174,13 +174,13 @@ namespace Enquirio.Tests.Tests.Controllers {
                 .WhenAll(from m in models select controller.SignUp(m)).Result;
 
             // Assert
-            Assert.IsType<UnauthorizedResult>(unauthorized);
+            Assert.IsType<UnauthorizedObjectResult>(unauthorized);
             Assert.All(badResults, a => Assert.IsType<BadRequestResult>(a));
             
             signInManager.Verify(s => s.SignOutAsync()
                 , Times.Exactly(models.Length + 1));
-            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>())
-                , Times.Once);
+            userManager.Verify(u => u.CreateAsync
+                    (It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
@@ -193,9 +193,6 @@ namespace Enquirio.Tests.Tests.Controllers {
             var userManager = new Mock<StubUserManager>();
             var signInManager = new Mock<StubSignInManager>();
 
-            userManager.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>()))
-                .ReturnsAsync(IdentityResult.Success);
-
             var controller 
                 = new AuthApiController(userManager.Object, signInManager.Object);
 
@@ -207,8 +204,10 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             signInManager.Verify(s => s.SignOutAsync(), Times.Once());
             signInManager.Verify(s => s.PasswordSignInAsync
-                (It.IsAny<IdentityUser>(), It.IsAny<string>(), false, false), Times.Once);
-            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>()), Times.Once);
+                (It.IsAny<IdentityUser>(), It.IsAny<string>(), false, false)
+                , Times.Once);
+            userManager.Verify(u => u.CreateAsync
+                (It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
