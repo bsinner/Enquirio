@@ -19,6 +19,6 @@ namespace Enquirio.Tests.TestData {
             , new Mock<IdentityErrorDescriber>().Object
             , new Mock<IServiceProvider>().Object
             , new Mock<ILogger<UserManager<User>>>().Object
-        ) {}
+        ) { }
     }
 }

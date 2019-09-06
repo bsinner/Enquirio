@@ -33,7 +33,7 @@ namespace Enquirio.Controllers {
                 if (user != null) {
 
                     var result = await _signInManager
-                        .PasswordSignInAsync(user, model.Password, false, false);
+                        .PasswordSignInAsync(user, model.Password, true, false);
 
                     if (result.Succeeded) {
                         return Ok();
@@ -42,6 +42,18 @@ namespace Enquirio.Controllers {
             }
 
             return Unauthorized();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("signUp")]
+        public async Task<IActionResult> SignUp([FromBody] LoginViewModel model) {
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("signUpAn")]
+        public async Task<IActionResult> SignUpAnonymous() {
+            return Ok();
         }
 
         [Authorize]

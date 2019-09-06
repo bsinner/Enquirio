@@ -183,8 +183,8 @@ namespace Enquirio.Data {
                 // TODO: A bug in EF Core 3.0 preview 8 causes OrderByDescending
                 // to throw an exception, uncomment or refactor when it's fixed
                 // bug: https://github.com/aspnet/EntityFrameworkCore/issues/17249
-                // query = sortDesc 
-                //         ? query.OrderByDescending(orderBy) 
+                // query = sortDesc
+                //         ? query.OrderByDescending(orderBy)
                 //         : query.OrderBy(orderBy);
             }
 
