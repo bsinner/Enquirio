@@ -1,6 +1,9 @@
 ﻿
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Enquirio.Controllers;
+using Enquirio.Models;
 using Enquirio.Tests.TestData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -81,14 +84,16 @@ namespace Enquirio.Tests.Tests.Controllers {
                 , signInManager.Object);
 
             // Act
-            var results = new [] { await controller.Login(model)
+            var unAuth = new [] { await controller.Login(model)
                 , await controller.Login(model2)
-                , await controller.Login(invalidModels[0])
+            };
+            var badReq = new [] {await controller.Login(invalidModels[0])
                 , await controller.Login(invalidModels[1])
             };
 
             // Assert
-            Assert.All(results, r => Assert.IsType<UnauthorizedResult>(r));
+            Assert.All(unAuth, r => Assert.IsType<UnauthorizedResult>(r));
+            Assert.All(badReq, r => Assert.IsType<BadRequestResult>(r));
 
             userManager.Verify(u => u.FindByNameAsync(model.Username), Times.Once);
             userManager.Verify(u => u.FindByEmailAsync(model2.Email), Times.Once);
@@ -150,8 +155,43 @@ namespace Enquirio.Tests.Tests.Controllers {
         }
 
         [Fact]
-        public async Task TestSignUpAnonymous() {
+        public async Task TestSignUpError() {
+            // Arrange
+            var signInManager = new Mock<StubSignInManager>();
+            var userManager = new Mock<StubUserManager>();
+            var models = new[] {AuthData.LoginWithUname, AuthData.LoginWithEmail
+                    , AuthData.BadLoginNoPw, AuthData.BadLoginOnlyPw };
 
+            userManager.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>()))
+                .ReturnsAsync(IdentityResult.Failed());
+
+            var controller 
+                = new AuthApiController(userManager.Object, signInManager.Object);
+
+            // Act
+            var unauthorized = await controller.SignUp(AuthData.LoginAllProps);
+            var badResults = Task
+                .WhenAll(from m in models select controller.SignUp(m)).Result;
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(unauthorized);
+            Assert.All(badResults, a => Assert.IsType<BadRequestResult>(a));
+            
+            signInManager.Verify(s => s.SignOutAsync()
+                , Times.Exactly(models.Length + 1));
+            userManager.Verify(u => u.CreateAsync(It.IsAny<IdentityUser>())
+                , Times.Once);
+
+            VerifyLoggers(signInManager, userManager);
+            signInManager.VerifyNoOtherCalls();
+            userManager.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task TestSignUpAnonymous() {
+            // Arrange
+            // Act
+            // Assert
         }
 
         // SignInManager and UserManager use set Logger internally 

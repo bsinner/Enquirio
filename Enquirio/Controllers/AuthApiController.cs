@@ -39,9 +39,11 @@ namespace Enquirio.Controllers {
                         return Ok();
                     }
                 }
+
+                return Unauthorized();
             }
 
-            return Unauthorized();
+            return BadRequest();
         }
 
         [AllowAnonymous]
