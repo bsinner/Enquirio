@@ -226,10 +226,14 @@ namespace Enquirio.Tests.Tests.Controllers {
         public void HttpVerbTests() {
             var t = typeof(AuthApiController);
             var post = typeof(HttpPostAttribute);
-            Assert.True(HasAttribute(nameof(AuthApiController.Login), post, t));
-            Assert.True(HasAttribute(nameof(AuthApiController.Logout), post, t));
-            Assert.True(HasAttribute(nameof(AuthApiController.SignUp), post, t));
-            Assert.True(HasAttribute(nameof(AuthApiController.SignUpAnonymous), post, t));
+            var names = new [] {
+                nameof(AuthApiController.Login)
+                , nameof(AuthApiController.Logout)
+                , nameof(AuthApiController.SignUp)
+                , nameof(AuthApiController.SignUpAnonymous)
+            };
+
+            Assert.All(names, method => Assert.True(HasAttribute(method, post, t)));
         }
     }
 }

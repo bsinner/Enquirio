@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
-using Castle.Core.Internal;
-using Enquirio.Controllers;
+using Microsoft.AspNetCore.Http;
+using Moq;
 
 namespace Enquirio.Tests.Tests.Controllers {
     public class ApiTestUtil {

@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Enquirio.Controllers;
 using Enquirio.Data;
 using Enquirio.Models;
 using Enquirio.Tests.TestData;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
 namespace Enquirio.Tests.Tests.Controllers {
     public class QuestionApiWriteTests : ApiTestUtil {
-
+        
         [Fact]
         public async Task CreateQuestionTest() {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
+            var context = GetMockContext();
+
             var question = QuestionData.TestQuestionMinProps;
-            var controller = new QuestionApiController(repo.Object);
+            var controller 
+                = new QuestionApiController(repo.Object, context.Object);
 
             // Act
             var result = await controller.CreateQuestion(question);
@@ -27,6 +33,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             
             repo.Verify(r => r.Create(question), Times.Once);
             repo.Verify(r => r.SaveAsync(), Times.Once);
+            VerifyMockContext(context, 1);
             repo.VerifyNoOtherCalls();
         }
 
@@ -35,14 +42,17 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
             var question = QuestionData.CreateTestInvalidQuestion;
-            var controller = new QuestionApiController(repo.Object);
+            var context = GetMockContext();
+
+            var controller 
+                = new QuestionApiController(repo.Object, context.Object);
 
             // Act
             var result = await controller.CreateQuestion(question);
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
-
+            VerifyMockContext(context, 0);
             repo.VerifyNoOtherCalls();
         }
 
@@ -51,12 +61,14 @@ namespace Enquirio.Tests.Tests.Controllers {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
             var answer = QuestionData.TestAnswerMinProps;
+            var context = GetMockContext();
 
             repo.Setup(r => r.ExistsAsync<Question>
                 (It.IsAny<Expression<Func<Question, bool>>>()))
                         .ReturnsAsync(true);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller 
+                = new QuestionApiController(repo.Object, context.Object);
 
             // Act
             var result = await controller.CreateAnswer(answer);
@@ -68,6 +80,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Verify(r => r.SaveAsync(), Times.Once);
             repo.Verify(r => r.ExistsAsync<Question>
                 (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+            VerifyMockContext(context, 1);
             repo.VerifyNoOtherCalls();
         }
 
@@ -77,11 +90,13 @@ namespace Enquirio.Tests.Tests.Controllers {
             var repo = new Mock<IRepositoryEnq>();
             var answer = QuestionData.TestAnswerMinProps;
             var errAnswer = QuestionData.InvalidTestAnswer;
+            var context = GetMockContext();
 
             repo.Setup(r => r.ExistsAsync<Question>(q => q.Id == answer.Id))
                 .ReturnsAsync(false);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller 
+                = new QuestionApiController(repo.Object, context.Object);
 
             // Act
             var notFoundResult = await controller.CreateAnswer(answer);
@@ -93,6 +108,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             repo.Verify(r => r.ExistsAsync<Question>
                 (It.IsAny<Expression<Func<Question, bool>>>()), Times.Once);
+            VerifyMockContext(context, 0);
             repo.VerifyNoOtherCalls();
         }
 
@@ -106,7 +122,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Question>(question.Id, null, null))
                 .ReturnsAsync(question);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.EditQuestion(question);
@@ -130,7 +146,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Question>(question.Id, null, null))
                 .Returns(Task.FromResult<Question>(null));
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.EditQuestion(question);
@@ -154,7 +170,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Answer>(answer.Id, null, null))
                 .ReturnsAsync(answer);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.EditAnswer(answer);
@@ -177,7 +193,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Answer>(answer.Id, null, null))
                 .Returns(Task.FromResult<Answer>(null));
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.EditAnswer(answer);
@@ -201,7 +217,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Question>
                     (It.IsAny<Expression<Func<Question, bool>>>())).ReturnsAsync(true);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.DeleteQuestion(id);
@@ -227,7 +243,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Question>
                     (It.IsAny<Expression<Func<Question, bool>>>())).ReturnsAsync(false);
             
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.DeleteQuestion(notFoundId);
@@ -252,7 +268,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Answer>
                 (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(true);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.DeleteAnswer(id);
@@ -278,7 +294,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Answer>
                 (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(false);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.DeleteAnswer(notFoundId);
@@ -300,13 +316,36 @@ namespace Enquirio.Tests.Tests.Controllers {
             var post = typeof(HttpPostAttribute);
             var put = typeof(HttpPutAttribute);
             var delete = typeof(HttpDeleteAttribute);
+
+            var methods = new Dictionary<string, Type> {
+                [ nameof(QuestionApiController.CreateAnswer) ] = post
+                , [ nameof(QuestionApiController.DeleteAnswer) ] = delete
+                , [ nameof(QuestionApiController.EditAnswer) ] = put
+                , [ nameof(QuestionApiController.EditQuestion) ] = put
+                , [ nameof(QuestionApiController.DeleteQuestion) ] = delete
+                , [ nameof(QuestionApiController.CreateQuestion) ] = post
+            };
+
+            Assert.All(methods, kvp => Assert.True(HasAttribute(kvp.Key, kvp.Value, t)));
+        }
+
+        private Mock<IHttpContextAccessor> GetMockContext() {
+            var cxt = new Mock<IHttpContextAccessor>();
+            var fakeGuid = "".PadLeft(36, '.');
+
+            cxt.Setup(c => c.HttpContext.User
+                    .FindFirst(ClaimTypes.NameIdentifier))
+                .Returns(new Claim(ClaimTypes.NameIdentifier, fakeGuid));
+
+            return cxt;
+        }
+
+        // Times represents times IHttpContextAccessor got the current user's ID
+        private void VerifyMockContext(Mock<IHttpContextAccessor> context, int times) {
             
-            Assert.True(HasAttribute(nameof(QuestionApiController.CreateAnswer), post, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteAnswer), delete, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.EditAnswer), put, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.EditQuestion), put, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.DeleteQuestion), delete, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.CreateQuestion), post, t));
+            context.Verify(c => c.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)
+                , Times.Exactly(times));
+            context.VerifyNoOtherCalls();
         }
     }
 }

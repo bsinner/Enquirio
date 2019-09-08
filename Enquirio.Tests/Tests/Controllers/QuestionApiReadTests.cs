@@ -20,13 +20,14 @@ namespace Enquirio.Tests.Tests.Controllers {
         public async Task TestGetQuestionsPageOne() {
             // Arrange
             var repo = new Mock<IRepositoryEnq>();
+            
             repo.Setup(r => r.GetAllAsync<Question>(
                     null, Desc(), true, 0, PageLength, null)
             ).ReturnsAsync(
                     QuestionData.TestQuestions().ToList().GetRange(0, PageLength)
             );
             
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act 
             var result = await controller.GetQuestions(1);
@@ -56,7 +57,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             SetUpPastOneRepo(repo, midSkip, maxSkip, questions);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act 
             var result = await controller.GetQuestions(midPage);
@@ -90,7 +91,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Question>(notFoundId, arr, null))
                 .Returns(Task.FromResult<Question>(null));
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.GetQuestion(id);
@@ -119,7 +120,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetCountAsync<Question>(null))
                 .ReturnsAsync(count);
 
-            var controller = new QuestionApiController(repo.Object);
+            var controller = new QApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.GetMaxPage();
