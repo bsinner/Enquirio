@@ -1,6 +1,7 @@
 ﻿using Enquirio.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +39,7 @@ namespace Enquirio {
 
             services.AddScoped<IRepositoryEnq, RepositoryEnq>();
             services.AddSingleton(Environment);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.Configure<IdentityOptions>(i => {
                 i.User.AllowedUserNameCharacters

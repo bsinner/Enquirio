@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Enquirio.Data;
 using Enquirio.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enquirio.Controllers {
@@ -11,10 +13,15 @@ namespace Enquirio.Controllers {
     public class QuestionApiController : Controller {
         
         private readonly IRepositoryEnq _repo;
-        private enum IDType { ZERO, ANY, NON_ZERO };
+        private readonly IHttpContextAccessor _httpContext;
+        private enum IdType { ZERO, ANY, NON_ZERO };
         public const int PageLength = 15;
 
-        public QuestionApiController(IRepositoryEnq repo) => _repo = repo;
+        public QuestionApiController(IRepositoryEnq repo
+                , IHttpContextAccessor httpContext) {
+            _repo = repo;
+            _httpContext = httpContext;
+        }
 
         [HttpGet("questions")]
         [Produces("application/json")]
@@ -23,7 +30,7 @@ namespace Enquirio.Controllers {
                 // Pass 1 instead of p in case the page is 0 or negative
                 return Ok(await GetPage(1));
             }
-
+            
             var maxPage = await MaxPage();
 
             return Ok(await GetPage(p > maxPage ? maxPage : p));
@@ -51,7 +58,7 @@ namespace Enquirio.Controllers {
         [HttpPost("createAnswer")]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateAnswer([FromBody] Answer answer) {
-            if (InvalidEntity(answer, IDType.ZERO)) {
+            if (IsCreateInvalid(answer)) {
                 return BadRequest();
             }
 
@@ -60,23 +67,17 @@ namespace Enquirio.Controllers {
                 return NotFound();
             }
 
-            _repo.Create(answer);
-            await _repo.SaveAsync();
-
-            return Ok(answer);
+            return await CreatePost(answer);
         }
 
         [HttpPost("createQuestion")]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateQuestion([FromBody] Question question) {
-            if (InvalidEntity(question, IDType.ZERO)) {
+            if (IsCreateInvalid(question)) {
                 return BadRequest();
             }
 
-            _repo.Create(question);
-            await _repo.SaveAsync();
-
-            return Ok(question);
+            return await CreatePost(question);
         }
 
         [HttpDelete("deleteAnswer/{id}")]
@@ -123,7 +124,7 @@ namespace Enquirio.Controllers {
         private async Task<IActionResult> EditPost<T>(T edited) 
                 where T : class, IPost {
 
-            if (InvalidEntity(edited, IDType.NON_ZERO)) {
+            if (InvalidEntity(edited, IdType.NON_ZERO)) {
                 return BadRequest();
             }
 
@@ -142,15 +143,30 @@ namespace Enquirio.Controllers {
             return Ok();
         }
 
-        // Return true if entity is invalid, zeroId allows entities with ID 0 for
-        // when an entity is created without an ID and the database assigns an ID
-        private bool InvalidEntity(IPost post, IDType idType) =>
+        // Generic create IPost
+        private async Task<IActionResult> CreatePost<T>(T textPost) 
+            where T : class, IPost {
+
+            textPost.UserId = GetUserId();
+            _repo.Create(textPost);
+
+            await _repo.SaveAsync();
+            return Ok(textPost);
+        }
+
+        // Return true if entity is invalid, IdType specifies if id
+        // should be zero, greater than 0, or any non negative number
+        private bool InvalidEntity(IPost post, IdType idType) =>
             string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)
-            || (idType == IDType.ZERO && post.Id != 0)
-            || (idType == IDType.NON_ZERO && post.Id == 0)
+            || (idType == IdType.ZERO && post.Id != 0)
+            || (idType == IdType.NON_ZERO && post.Id == 0)
             || (post.Id < 0);
 
+        // Get if a post to create has an id greater than 0 
+        // or empty fields
+        private bool IsCreateInvalid(IPost post) 
+            => InvalidEntity(post, IdType.ZERO);
 
         // Get one page of questions
         private async Task<List<Question>> GetPage(int page) {
@@ -163,5 +179,9 @@ namespace Enquirio.Controllers {
         private async Task<int> MaxPage() => (int) Math.Ceiling(
             await _repo.GetCountAsync<Question>() / (double) PageLength
         );
+
+        private string GetUserId()
+            => _httpContext.HttpContext
+                .User.FindFirst(ClaimTypes.NameIdentifier).Value;
     }
 }
