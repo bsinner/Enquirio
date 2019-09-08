@@ -14,7 +14,7 @@ using Xunit;
 namespace Enquirio.Tests.Tests.Controllers {
     public class QuestionApiReadTests : ApiTestUtil {
 
-        private const int PageLength = QuestionApiController.PageLength;
+        private const int PageLength = ReadonlyApiController.PageLength;
 
         [Fact]
         public async Task TestGetQuestionsPageOne() {
@@ -27,7 +27,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                     QuestionData.TestQuestions().ToList().GetRange(0, PageLength)
             );
             
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new ReadonlyApiController(repo.Object);
 
             // Act 
             var result = await controller.GetQuestions(1);
@@ -57,7 +57,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             SetUpPastOneRepo(repo, midSkip, maxSkip, questions);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new ReadonlyApiController(repo.Object);
 
             // Act 
             var result = await controller.GetQuestions(midPage);
@@ -91,7 +91,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Question>(notFoundId, arr, null))
                 .Returns(Task.FromResult<Question>(null));
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new ReadonlyApiController(repo.Object);
 
             // Act
             var result = await controller.GetQuestion(id);
@@ -120,7 +120,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetCountAsync<Question>(null))
                 .ReturnsAsync(count);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new ReadonlyApiController(repo.Object);
 
             // Act
             var result = await controller.GetMaxPage();
@@ -135,12 +135,12 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void HttpVerbTests() {
-            var t = typeof(QuestionApiController);
+            var t = typeof(ReadonlyApiController);
             var get = typeof(HttpGetAttribute);
 
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestions), get, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetMaxPage), get, t));
-            Assert.True(HasAttribute(nameof(QuestionApiController.GetQuestion), get, t));
+            Assert.True(HasAttribute(nameof(ReadonlyApiController.GetQuestions), get, t));
+            Assert.True(HasAttribute(nameof(ReadonlyApiController.GetMaxPage), get, t));
+            Assert.True(HasAttribute(nameof(ReadonlyApiController.GetQuestion), get, t));
         }
 
         private Expression<Func<Question, IComparable>> Desc() 

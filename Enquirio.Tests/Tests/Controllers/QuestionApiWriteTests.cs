@@ -23,7 +23,7 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             var question = QuestionData.TestQuestionMinProps;
             var controller 
-                = new QuestionApiController(repo.Object, context.Object);
+                = new WriteApiController(repo.Object, context.Object);
 
             // Act
             var result = await controller.CreateQuestion(question);
@@ -45,7 +45,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var context = GetMockContext();
 
             var controller 
-                = new QuestionApiController(repo.Object, context.Object);
+                = new WriteApiController(repo.Object, context.Object);
 
             // Act
             var result = await controller.CreateQuestion(question);
@@ -68,7 +68,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                         .ReturnsAsync(true);
 
             var controller 
-                = new QuestionApiController(repo.Object, context.Object);
+                = new WriteApiController(repo.Object, context.Object);
 
             // Act
             var result = await controller.CreateAnswer(answer);
@@ -96,7 +96,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                 .ReturnsAsync(false);
 
             var controller 
-                = new QuestionApiController(repo.Object, context.Object);
+                = new WriteApiController(repo.Object, context.Object);
 
             // Act
             var notFoundResult = await controller.CreateAnswer(answer);
@@ -122,7 +122,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Question>(question.Id, null, null))
                 .ReturnsAsync(question);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.EditQuestion(question);
@@ -146,7 +146,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Question>(question.Id, null, null))
                 .Returns(Task.FromResult<Question>(null));
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.EditQuestion(question);
@@ -170,7 +170,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Answer>(answer.Id, null, null))
                 .ReturnsAsync(answer);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.EditAnswer(answer);
@@ -193,7 +193,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.GetByIdAsync<Answer>(answer.Id, null, null))
                 .Returns(Task.FromResult<Answer>(null));
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.EditAnswer(answer);
@@ -217,7 +217,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Question>
                     (It.IsAny<Expression<Func<Question, bool>>>())).ReturnsAsync(true);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.DeleteQuestion(id);
@@ -243,7 +243,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Question>
                     (It.IsAny<Expression<Func<Question, bool>>>())).ReturnsAsync(false);
             
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.DeleteQuestion(notFoundId);
@@ -268,7 +268,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Answer>
                 (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(true);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var result = await controller.DeleteAnswer(id);
@@ -294,7 +294,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             repo.Setup(r => r.ExistsAsync<Answer>
                 (It.IsAny<Expression<Func<Answer, bool>>>())).ReturnsAsync(false);
 
-            var controller = new QApiControllerWithContext(repo.Object);
+            var controller = new WrApiControllerWithContext(repo.Object);
 
             // Act
             var notFoundResult = await controller.DeleteAnswer(notFoundId);
@@ -312,18 +312,18 @@ namespace Enquirio.Tests.Tests.Controllers {
 
         [Fact]
         public void HttpVerbTests() {
-            var t = typeof(QuestionApiController);
+            var t = typeof(WriteApiController);
             var post = typeof(HttpPostAttribute);
             var put = typeof(HttpPutAttribute);
             var delete = typeof(HttpDeleteAttribute);
 
             var methods = new Dictionary<string, Type> {
-                [ nameof(QuestionApiController.CreateAnswer) ] = post
-                , [ nameof(QuestionApiController.DeleteAnswer) ] = delete
-                , [ nameof(QuestionApiController.EditAnswer) ] = put
-                , [ nameof(QuestionApiController.EditQuestion) ] = put
-                , [ nameof(QuestionApiController.DeleteQuestion) ] = delete
-                , [ nameof(QuestionApiController.CreateQuestion) ] = post
+                [ nameof(WriteApiController.CreateAnswer) ] = post
+                , [ nameof(WriteApiController.DeleteAnswer) ] = delete
+                , [ nameof(WriteApiController.EditAnswer) ] = put
+                , [ nameof(WriteApiController.EditQuestion) ] = put
+                , [ nameof(WriteApiController.DeleteQuestion) ] = delete
+                , [ nameof(WriteApiController.CreateQuestion) ] = post
             };
 
             Assert.All(methods, kvp => Assert.True(HasAttribute(kvp.Key, kvp.Value, t)));

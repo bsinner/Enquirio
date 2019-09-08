@@ -21,7 +21,6 @@ namespace Enquirio.Controllers {
             _signInManager = signInManager;
         }
 
-        [AllowAnonymous]
         [HttpPost("login")]
         [Consumes("application/json")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model) {
@@ -49,7 +48,6 @@ namespace Enquirio.Controllers {
             return BadRequest();
         }
 
-        [AllowAnonymous]
         [HttpPost("signUp")]
         public async Task<IActionResult> SignUp([FromBody] LoginViewModel model) {
             await _signInManager.SignOutAsync();
@@ -73,7 +71,6 @@ namespace Enquirio.Controllers {
             return BadRequest();
         }
 
-        [AllowAnonymous]
         [HttpPost("signUpAn")]
         public async Task<IActionResult> SignUpAnonymous() {
             await _signInManager.SignOutAsync();

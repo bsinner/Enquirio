@@ -3,9 +3,9 @@ using Enquirio.Data;
 using Microsoft.AspNetCore.Http;
 
 namespace Enquirio.Tests.TestData {
-    class QApiControllerWithContext : QuestionApiController {
+    class WrApiControllerWithContext : WriteApiController {
 
-        public QApiControllerWithContext(IRepositoryEnq repo) : base (
+        public WrApiControllerWithContext(IRepositoryEnq repo) : base (
             repo, new HttpContextAccessor()
         ) { }
     }
