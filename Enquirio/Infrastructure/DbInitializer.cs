@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Enquirio.Data;
 using Enquirio.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Enquirio.Data {
+namespace Enquirio.Infrastructure {
 
     public class DbInitializer {
 

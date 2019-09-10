@@ -1,4 +1,5 @@
 ﻿using Enquirio.Data;
+using Enquirio.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +45,12 @@ namespace Enquirio {
             services.Configure<IdentityOptions>(i => {
                 i.User.AllowedUserNameCharacters
                     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._+";
+            });
+
+            services.AddAuthorization(opts => {
+                opts.AddPolicy("AuthorOnly", p => {
+                    p.AddRequirements(new AuthorOnlyRequirement(new [] { "Admin" }));
+                });
             });
         }
 

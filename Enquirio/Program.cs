@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Enquirio.Data;
+using Enquirio.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
