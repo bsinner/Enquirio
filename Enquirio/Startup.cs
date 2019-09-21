@@ -1,5 +1,6 @@
 ﻿using Enquirio.Data;
 using Enquirio.Infrastructure;
+using Enquirio.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -34,7 +35,7 @@ namespace Enquirio {
                 );
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<DbContextEnq>()
                 .AddDefaultTokenProviders();
 

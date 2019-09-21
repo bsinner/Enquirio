@@ -14,12 +14,15 @@ namespace Enquirio.Controllers {
         
         private readonly IRepositoryEnq _repo;
         private readonly IHttpContextAccessor _httpContext;
+        private readonly IAuthorizationService _authService;
         private enum IdType { ZERO, ANY, NON_ZERO };
 
         public WriteApiController(IRepositoryEnq repo
-                , IHttpContextAccessor httpContext) {
+                , IHttpContextAccessor httpContext
+                , IAuthorizationService authService) {
             _repo = repo;
             _httpContext = httpContext;
+            _authService = authService;
         }
 
         [HttpPost("createAnswer")]
@@ -81,6 +84,11 @@ namespace Enquirio.Controllers {
                 return NotFound();
             }
 
+//            var serviceResult = await _authService.AuthorizeAsync(
+//                _httpContext.HttpContext.User
+//                , await _repo.GetByIdAsync<T>(id)
+//                , "AuthorOnly");
+
             _repo.DeleteById<T>(id);
             await _repo.SaveAsync();
 
@@ -116,15 +124,15 @@ namespace Enquirio.Controllers {
 
             textPost.UserId = GetUserId();
             _repo.Create(textPost);
-
+            
             await _repo.SaveAsync();
             return Ok(textPost);
         }
 
         // Return true if entity is invalid, IdType specifies if id
         // should be zero, greater than 0, or any non negative number
-        private bool InvalidEntity(IPost post, IdType idType) =>
-            string.IsNullOrEmpty(post.Title)
+        private bool InvalidEntity(IPost post, IdType idType) 
+            => string.IsNullOrEmpty(post.Title)
             || string.IsNullOrEmpty(post.Contents)
             || (idType == IdType.ZERO && post.Id != 0)
             || (idType == IdType.NON_ZERO && post.Id == 0)

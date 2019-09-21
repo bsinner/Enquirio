@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Enquirio.Data;
-using Microsoft.AspNetCore.Identity;
 
 namespace Enquirio.Models {
     public class Question : IPost {
@@ -21,6 +20,6 @@ namespace Enquirio.Models {
 
         public List<Answer> Answers { get; set; } = new List<Answer>();
         [JsonIgnore]
-        public virtual IdentityUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 }

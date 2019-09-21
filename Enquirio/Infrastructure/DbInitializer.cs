@@ -35,7 +35,7 @@ namespace Enquirio.Infrastructure {
                 , IConfiguration config) {
 
             var userManager = provider
-                .GetRequiredService<UserManager<IdentityUser>>();
+                .GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = provider
                 .GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -52,7 +52,7 @@ namespace Enquirio.Infrastructure {
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
 
-                var user = new IdentityUser { UserName = username, Email = email };
+                var user = new ApplicationUser { UserName = username, Email = email };
                 IdentityResult result = await userManager.CreateAsync(user, password);
 
                 if (result.Succeeded) {

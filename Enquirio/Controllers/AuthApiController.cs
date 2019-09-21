@@ -11,12 +11,12 @@ namespace Enquirio.Controllers {
     [Route("/api/")]
     public class AuthApiController : Controller {
 
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private const string Prefix = "Guest_";
 
-        public AuthApiController(UserManager<IdentityUser> userManager
-                , SignInManager<IdentityUser> signInManager) {
+        public AuthApiController(UserManager<ApplicationUser> userManager
+                , SignInManager<ApplicationUser> signInManager) {
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -54,7 +54,7 @@ namespace Enquirio.Controllers {
 
             if (IsModelValid(model, true)) {
 
-                var user = new IdentityUser {
+                var user = new ApplicationUser {
                     UserName = model.Username, Email = model.Email
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -75,7 +75,7 @@ namespace Enquirio.Controllers {
         public async Task<IActionResult> SignUpAnonymous() {
             await _signInManager.SignOutAsync();
             var pw = GetPw();
-            var user = new IdentityUser();
+            var user = new ApplicationUser();
 
             await _userManager.CreateAsync(user, pw);
             await _signInManager
