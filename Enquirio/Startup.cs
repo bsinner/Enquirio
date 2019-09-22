@@ -1,6 +1,10 @@
-﻿using Enquirio.Data;
+﻿using System;
+using System.Threading.Tasks;
+using Enquirio.Data;
 using Enquirio.Infrastructure;
 using Enquirio.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -53,6 +57,12 @@ namespace Enquirio {
                     p.AddRequirements(new AuthorOnlyRequirement(new [] { "Admin" }));
                 });
             });
+
+            // Override MVC redirecting to login page on 401 or 403 and returning 404
+            services.ConfigureApplicationCookie(opts => {
+                opts.Events.OnRedirectToAccessDenied = cxt => SetCode(cxt, 403);
+                opts.Events.OnRedirectToLogin = cxt => SetCode(cxt, 401);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
@@ -74,5 +84,13 @@ namespace Enquirio {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
             });
         }
+
+        private readonly Func<RedirectContext<CookieAuthenticationOptions>, int, Task> 
+                SetCode = (cxt, code) => {
+
+            cxt.Response.Headers["Location"] = cxt.RedirectUri;
+            cxt.Response.StatusCode = code;
+            return Task.CompletedTask;
+        };
     }
 }
