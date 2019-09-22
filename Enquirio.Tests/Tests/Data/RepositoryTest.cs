@@ -11,12 +11,12 @@ using Xunit;
 namespace Enquirio.Tests {
     public class RepositoryTest {
 
-        private readonly List<string> _data = SqlTestData.Questions();
+        private readonly List<string> _data = SqlTestData.QuestionData();
 
         [Fact]
         public void TestGetAll() {
             RunTest(repo => {
-                Assert.Equal(9, repo.GetAll<Question>().Count());
+                Assert.Equal(9, repo.GetAll<Question>().Count);
             });
         }
 
@@ -31,8 +31,9 @@ namespace Enquirio.Tests {
         [Fact]
         public void TestCreateWithDateInit() {
             RunTest(testMulti: (repo, repo2) => {
-                Question q = new Question() { Title = "q", Contents = "..." };
-                Answer a = new Answer() { Title = "a", Contents = "..." };
+                string uid = SqlTestData.UserId;
+                Question q = new Question { Title = "q", Contents = "...", UserId = uid };
+                Answer a = new Answer { Title = "a", Contents = "...", UserId = uid};
                 q.Answers.Add(a);
 
                 repo.Create(q);
@@ -98,7 +99,7 @@ namespace Enquirio.Tests {
             await RunTestAsync(async repo => {
 
                 var result = await repo.GetByIdAsync<Question>
-                    (2, navPropCollections : new [] { "Answers" });
+                    (2, new [] { "Answers" });
 
                 Assert.NotNull(result);
                 Assert.Single(result.Answers);
@@ -117,7 +118,7 @@ namespace Enquirio.Tests {
                 var q = repo2.GetAll<Question>();
                 var a = repo2.GetAll<Answer>();
 
-                Assert.Equal(7, q.Count());
+                Assert.Equal(7, q.Count);
                 Assert.Empty(a);
             });
         }
@@ -128,8 +129,8 @@ namespace Enquirio.Tests {
                 var id = 2;
                 var newContents = "----";
                 
-                Question q = repo.GetById<Question>(id, navPropCollections : new [] { "Answers" });
-                Answer a = new Answer() { Title = "A5", Contents = "..." };
+                Question q = repo.GetById<Question>(id, new [] { "Answers" });
+                Answer a = new Answer { Title = "A5", Contents = "...", UserId = SqlTestData.UserId };
 
                 q.Contents = newContents;
                 q.Answers.Add(a);
@@ -190,6 +191,7 @@ namespace Enquirio.Tests {
         // Create test data and pass repositories to access it in callback
         private void RunTest(Action<RepositoryEnq> test = null
                 , Action<RepositoryEnq, RepositoryEnq> testMulti = null) {
+
             using var factory = new TestContextFactory(_data);
             using var context = factory.GetContext();
 
@@ -201,6 +203,7 @@ namespace Enquirio.Tests {
 
         private async Task RunTestAsync(Func<RepositoryEnq, Task> test = null
                 , Func<RepositoryEnq, RepositoryEnq, Task> testMulti = null) {
+
             using var factory = new TestContextFactory(_data);
             await using var context = factory.GetContext();
 
