@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Enquirio.Controllers;
+using Enquirio.Models;
 using Enquirio.Tests.TestData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var userManager = new Mock<StubUserManager>();
             var signinManager = new Mock<StubSignInManager>();
 
-            var user = new IdentityUser();
+            var user = new ApplicationUser();
             var models = new [] { AuthData.LoginWithUname, AuthData.LoginWithEmail };
             var pws = new[] { models[0].Password, models[1].Password };
 
@@ -62,7 +63,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var userManager = new Mock<StubUserManager>();
             var signInManager = new Mock<StubSignInManager>();
 
-            var user = new IdentityUser();
+            var user = new ApplicationUser();
             var model = AuthData.LoginWithUname;
             var model2 = AuthData.LoginWithEmail;
             var invalidModels = new[] {
@@ -70,7 +71,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             };
 
             userManager.Setup(u => u.FindByNameAsync(model.Username))
-                .Returns(Task.FromResult<IdentityUser>(null));
+                .Returns(Task.FromResult<ApplicationUser>(null));
             userManager.Setup(u => u.FindByEmailAsync(model2.Email))
                 .ReturnsAsync(user);
             signInManager.Setup(s => s.PasswordSignInAsync
@@ -131,7 +132,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             var userModel = AuthData.LoginAllProps;
 
             userManager.Setup(u => u.CreateAsync
-                (It.IsAny<IdentityUser>(), It.IsAny<string>()))
+                (It.IsAny<ApplicationUser>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
             var controller = new AuthApiController(userManager.Object, signInManager.Object);
@@ -144,9 +145,9 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             signInManager.Verify(s => s.SignOutAsync(), Times.Once);
             signInManager.Verify(s => s.PasswordSignInAsync
-                (It.IsAny<IdentityUser>(), userModel.Password, true, false), Times.Once);
+                (It.IsAny<ApplicationUser>(), userModel.Password, true, false), Times.Once);
             userManager.Verify(u => u.CreateAsync
-                (It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
+                (It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
@@ -162,7 +163,7 @@ namespace Enquirio.Tests.Tests.Controllers {
                     , AuthData.BadLoginNoPw, AuthData.BadLoginOnlyPw };
 
             userManager.Setup(u => u.CreateAsync
-                (It.IsAny<IdentityUser>(), It.IsAny<string>()))
+                (It.IsAny<ApplicationUser>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed());
 
             var controller 
@@ -180,7 +181,7 @@ namespace Enquirio.Tests.Tests.Controllers {
             signInManager.Verify(s => s.SignOutAsync()
                 , Times.Exactly(models.Length + 1));
             userManager.Verify(u => u.CreateAsync
-                    (It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
+                    (It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
@@ -204,10 +205,10 @@ namespace Enquirio.Tests.Tests.Controllers {
 
             signInManager.Verify(s => s.SignOutAsync(), Times.Once());
             signInManager.Verify(s => s.PasswordSignInAsync
-                (It.IsAny<IdentityUser>(), It.IsAny<string>(), false, false)
+                (It.IsAny<ApplicationUser>(), It.IsAny<string>(), false, false)
                 , Times.Once);
             userManager.Verify(u => u.CreateAsync
-                (It.IsAny<IdentityUser>(), It.IsAny<string>()), Times.Once);
+                (It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
 
             VerifyLoggers(signInManager, userManager);
             signInManager.VerifyNoOtherCalls();
@@ -218,8 +219,8 @@ namespace Enquirio.Tests.Tests.Controllers {
         private void VerifyLoggers(Mock<StubSignInManager> sm = null
                 , Mock<StubUserManager> um = null) {
 
-            sm?.VerifySet(s => s.Logger = It.IsAny<ILogger<SignInManager<IdentityUser>>>());
-            um?.VerifySet(u => u.Logger = It.IsAny<ILogger<UserManager<IdentityUser>>>());
+            sm?.VerifySet(s => s.Logger = It.IsAny<ILogger<SignInManager<ApplicationUser>>>());
+            um?.VerifySet(u => u.Logger = It.IsAny<ILogger<UserManager<ApplicationUser>>>());
         }
 
         [Fact]

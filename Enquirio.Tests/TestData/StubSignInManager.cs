@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
-using User = Microsoft.AspNetCore.Identity.IdentityUser;
+using User = Enquirio.Models.ApplicationUser;
 
 namespace Enquirio.Tests.TestData {
 
